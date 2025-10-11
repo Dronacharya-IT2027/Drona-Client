@@ -1,10 +1,16 @@
 import React from "react";
-
-const Home = () => (
-  <div className="text-center py-16 bg-blue-50">
-    <h2 className="text-4xl font-bold mb-4">Welcome to MyLanding</h2>
-    <p className="text-gray-600">Your one-stop solution for web innovation.</p>
-  </div>
-);
+import Hero from "../Component/Advanced/Home/Hero";
+import Services from "../Component/Advanced/Home/Services";
+const Home = () => {
+  return (
+    <div className="w-full">
+      {/* Hero Section */}
+     
+      <Hero />
+      <Services/>
+    
+    </div>
+  );
+};
 
 export default Home;

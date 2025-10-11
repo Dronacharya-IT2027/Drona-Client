@@ -1,11 +1,21 @@
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,jsx,ts,tsx}", // adjust for your project
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        kodchasan: ['Kodchasan', 'sans-serif'],
+      },
+      colors: {
+        primary: '#151313',   // 1st color
+        secondary: '#ff5734', // 2nd color
+        accent1: '#be94f5',   // 3rd color
+        accent2: '#fccc42',   // 4th color
+        background: '#f7f7f5',// 5th color
+      },
+    },
   },
   plugins: [],
 }
