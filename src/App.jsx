@@ -1,14 +1,20 @@
 import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+
+//componnets
 import Navbar from "./Component/Basic/Navbar";
 import Footer from "./Component/Basic/Footer";
 import Loader from "./Component/Basic/Loader";
 import ErrorBoundary from "./Component/Basic/ErrorBoundary";
 
+
+//pages
 import Home from "./Pages/Home";
 import About from "./Pages/About";
 import Services from "./Pages/Services";
 import Contact from "./Pages/Contact";
+import StudentDashboard from "./Pages/StudentDashbord";
 
 function App() {
   return (
@@ -22,6 +28,7 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/services" element={<Services />} />
               <Route path="/contact" element={<Contact />} />
+                <Route path="/dashboard" element={<StudentDashboard />} />
               <Route
                 path="*"
                 element={

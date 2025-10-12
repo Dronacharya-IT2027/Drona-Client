@@ -6,13 +6,10 @@ import TestimonialSection from "../Component/Advanced/Home/TestimonialSection";
 const Home = () => {
   return (
     <div className="w-full">
-       
-     
       <Hero />
       <Services/>
       <CTASection/>
       <TestimonialSection/>
-    
     </div>
   );
 };
