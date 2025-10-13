@@ -15,6 +15,7 @@ import About from "./Pages/About";
 import Services from "./Pages/Services";
 import Contact from "./Pages/Contact";
 import StudentDashboard from "./Pages/StudentDashbord";
+import GDandInterviewpage from "./Pages/GDandInterviewpage";
 
 function App() {
   return (
@@ -28,7 +29,8 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/services" element={<Services />} />
               <Route path="/contact" element={<Contact />} />
-                <Route path="/dashboard" element={<StudentDashboard />} />
+              <Route path="/dashboard" element={<StudentDashboard />} />
+              <Route path= "/GD-and-Interview" element = {<GDandInterviewpage/>}/>
               <Route
                 path="*"
                 element={
