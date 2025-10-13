@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Linkedin, Download, Clock, Calendar, Award, TrendingUp } from 'lucide-react';
 
@@ -57,7 +58,7 @@ const SyllabusModal = ({ isOpen, onClose, syllabus, title }) => {
 
 export const TestCard = ({ test, isPast = false }) => {
   const [showSyllabus, setShowSyllabus] = useState(false);
-
+  const navigate = useNavigate();
   return (
     <>
       <motion.div
@@ -113,9 +114,13 @@ export const TestCard = ({ test, isPast = false }) => {
               Download
             </button>
           ) : (
-            <button className="flex-1 bg-secondary text-white py-2 px-3 rounded-lg text-sm font-semibold hover:bg-opacity-90 transition-all">
-              Start Test
-            </button>
+          <button
+  className="flex-1 bg-secondary text-white py-2 px-3 rounded-lg text-sm font-semibold hover:bg-opacity-90 transition-all"
+  onClick={() => navigate("/test")}
+>
+  Start Test
+</button>
+
           )}
           <button
             onClick={() => setShowSyllabus(true)}

@@ -16,6 +16,7 @@ import Aptitest from "./Pages/Services";
 import Contact from "./Pages/Contact";
 import StudentDashboard from "./Pages/StudentDashbord";
 import GDandInterviewpage from "./Pages/GDandInterviewpage";
+import SecureTestApp from "./Pages/SecureTestApp";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/dashboard" element={<StudentDashboard />} />
               <Route path= "/GD-and-Interview" element = {<GDandInterviewpage/>}/>
+               <Route path= "/test" element = {<SecureTestApp/>}/>
               <Route
                 path="*"
                 element={
