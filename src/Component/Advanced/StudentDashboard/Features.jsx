@@ -16,7 +16,7 @@ const Features = () => {
       borderColor: "border-accent1",
       notifications: 3,
       visible: true,
-      route: "/analytics" // Add route for each feature
+      route: "/aptitude-test" // Add route for each feature
     },
     {
       id: 2,

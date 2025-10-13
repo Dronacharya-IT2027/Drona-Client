@@ -12,7 +12,7 @@ import ErrorBoundary from "./Component/Basic/ErrorBoundary";
 //pages
 import Home from "./Pages/Home";
 import About from "./Pages/About";
-import Services from "./Pages/Services";
+import Aptitest from "./Pages/Services";
 import Contact from "./Pages/Contact";
 import StudentDashboard from "./Pages/StudentDashbord";
 import GDandInterviewpage from "./Pages/GDandInterviewpage";
@@ -27,7 +27,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
-              <Route path="/services" element={<Services />} />
+              <Route path="/aptitude-test" element={<Aptitest />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/dashboard" element={<StudentDashboard />} />
               <Route path= "/GD-and-Interview" element = {<GDandInterviewpage/>}/>
