@@ -22,6 +22,10 @@ import SecureTestApp from "./Pages/SecureTestApp";
 
 import Admin from "./Pages/Admin";
 
+//superadmin
+
+import SuperAdminDashboard from "./Pages/SuperAdmin";
+
 function App() {
   return (
     <Router>
@@ -41,6 +45,7 @@ function App() {
                {/* admin */}
 
                <Route path= "/admin" element = {<Admin/>}/>
+                <Route path= "/admin-super" element = {<SuperAdminDashboard/>}/>
 
               <Route
                 path="*"
