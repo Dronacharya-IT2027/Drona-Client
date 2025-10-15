@@ -43,7 +43,7 @@ const Features = () => {
       borderColor: "border-accent1",
       notifications: 12,
       visible: showAdvancedFeatures,
-      route: "/reporting"
+      route: "/admin"
     }
   ];
 

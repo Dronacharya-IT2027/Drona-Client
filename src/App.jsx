@@ -18,6 +18,10 @@ import StudentDashboard from "./Pages/StudentDashbord";
 import GDandInterviewpage from "./Pages/GDandInterviewpage";
 import SecureTestApp from "./Pages/SecureTestApp";
 
+//admin
+
+import Admin from "./Pages/Admin";
+
 function App() {
   return (
     <Router>
@@ -33,6 +37,11 @@ function App() {
               <Route path="/dashboard" element={<StudentDashboard />} />
               <Route path= "/GD-and-Interview" element = {<GDandInterviewpage/>}/>
                <Route path= "/test" element = {<SecureTestApp/>}/>
+
+               {/* admin */}
+
+               <Route path= "/admin" element = {<Admin/>}/>
+
               <Route
                 path="*"
                 element={
