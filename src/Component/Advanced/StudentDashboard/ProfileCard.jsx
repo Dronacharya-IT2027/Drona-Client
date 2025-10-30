@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaGithub, FaPen } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { MdSchool } from "react-icons/md";
 import { ChevronDown, X } from 'lucide-react';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const ProfileCard = () => {
   const [showModal, setShowModal] = useState(false);
   const [showeditModal , setShoweditModal] = useState(false);
+  const { getStudentDetails } = useAuth();
+  const [student, setStudent] = useState(null);
+
+  useEffect(() => {
+    const fetchStudent = async () => {
+      const data = await getStudentDetails();
+      if (data) setStudent(data);
+    };
+    fetchStudent();
+    console.log(student);
+  }, []);
   
   // Sample data
   const rankings = [
@@ -51,25 +63,25 @@ const ProfileCard = () => {
 
         {/* Name + Enrollment */}
         <h2 className="text-base md:text-lg font-semibold text-primary text-center">
-          Adarsh Kumar
+          {student?.name || 'Fetching Name...'}
         </h2>
         <p className="text-xs md:text-sm text-secondary text-center">
-          Enrollment: 08315603123
+          {student?.enrollmentNumber || 'Fetching Enrollment No...'}
         </p>
 
         {/* Icons Section */}
         <div className="flex justify-around w-full mt-3 md:mt-4">
           <div className="flex flex-col items-center">
             <FaGithub className="text-xl md:text-2xl text-primary" />
-            <p className="text-xs md:text-sm font-medium mt-1 text-accent2">200</p>
+            <p className="text-xs md:text-sm font-medium mt-1 text-accent2">{student?.github || '...'}</p>
           </div>
           <div className="flex flex-col items-center">
             <SiLeetcode className="text-xl md:text-2xl text-accent1" />
-            <p className="text-xs md:text-sm font-medium mt-1 text-secondary">300</p>
+            <p className="text-xs md:text-sm font-medium mt-1 text-secondary">{student?.leetcode || '...'}</p>
           </div>
           <div className="flex flex-col items-center">
             <MdSchool className="text-xl md:text-2xl text-secondary" />
-            <p className="text-xs md:text-sm font-medium mt-1 text-accent1">24</p>
+            <p className="text-xs md:text-sm font-medium mt-1 text-accent1">{student?.tests.length || 0}</p>
           </div>
         </div>
       </div>
@@ -95,7 +107,7 @@ const ProfileCard = () => {
               const isCurrent = idx === 1;
               return (
                 <div
-                  key={student.rank}
+                  key={student?.rank}
                   className={`flex items-center justify-between p-3 rounded-lg transition-all duration-300 ${
                     isCurrent
                       ? 'bg-secondary text-white shadow-md scale-105'
@@ -108,14 +120,14 @@ const ProfileCard = () => {
                         isCurrent ? 'bg-accent2 text-primary' : 'bg-gray-300 text-gray-600'
                       }`}
                     >
-                      {student.rank}
+                      {student?.rank}
                     </div>
                     <span
                       className={`font-semibold text-sm md:text-base ${
                         isCurrent ? 'text-white' : 'text-gray-600'
                       }`}
                     >
-                      {student.name}
+                      {student?.name}
                     </span>
                   </div>
                   <span
@@ -123,7 +135,7 @@ const ProfileCard = () => {
                       isCurrent ? 'text-white' : 'text-gray-600'
                     }`}
                   >
-                    {student.score}
+                    {student?.score}
                   </span>
                 </div>
               );
@@ -238,16 +250,16 @@ const ProfileCard = () => {
             <div className="space-y-3">
               {rankings.map((student) => (
                 <div
-                  key={student.rank}
+                  key={student?.rank}
                   className="flex items-center justify-between p-4 bg-background rounded-lg hover:bg-accent2 hover:shadow-md transition-all"
                 >
                   <div className="flex items-center space-x-4">
                     <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-white font-bold shadow">
-                      {student.rank}
+                      {student?.rank}
                     </div>
-                    <span className="font-bold text-primary">{student.name}</span>
+                    <span className="font-bold text-primary">{student?.name}</span>
                   </div>
-                  <span className="font-bold text-secondary">{student.score}</span>
+                  <span className="font-bold text-secondary">{student?.score}</span>
                 </div>
               ))}
             </div>

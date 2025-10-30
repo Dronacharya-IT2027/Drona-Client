@@ -36,12 +36,14 @@ export default function Hero() {
       <div className="relative flex items-end md:items-center justify-center md:justify-start h-full px-6 pb-12 md:px-10 lg:px-24">
         <div className="font-kodchasan text-center md:text-left space-y-4 md:space-y-5 lg:space-y-6 max-w-xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight break-words">
-            Unlock Your Future With <span className="text-secondary">Smart</span>{" "}
+            Unlock Your Future With{" "}
+            <span className="text-secondary">Smart</span>{" "}
             <span className="text-accent1">Placement</span> Prep
           </h1>
 
           <p className="hidden md:block text-primary text-base md:text-lg leading-relaxed max-w-md">
-            Prepare smarter for placements with aptitude, GD, and interview training all in one place.
+            Prepare smarter for placements with aptitude, GD, and interview
+            training all in one place.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-4 sm:gap-6">

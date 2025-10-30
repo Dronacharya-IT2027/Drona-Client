@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Linkedin, Download, Clock, Calendar, Award, TrendingUp } from 'lucide-react';
-import {RankList ,WeakTopics } from "../Test/Ranklist";
-import {TestCard} from "../Test/Testcard";
+import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { RankList, WeakTopics } from "../Test/Ranklist";
+import { TestCard } from "../Test/Testcard";
+import { useAuth } from '../../../contexts/AuthContext';
 
-
-// Main Component
 const AptitudeTestPage = () => {
+  const { fetchActiveTest, fetchAllTestScores } = useAuth();
+
+  useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const activeTest = await fetchActiveTest();
+      console.log("Active Test:", activeTest);
+
+      const allScores = await fetchAllTestScores();
+      console.log("All Test Scores:", allScores);
+    } catch (err) {
+      console.error("Error fetching test data:", err);
+    }
+  };
+
+  fetchData();
+}, []);
+
   const upcomingTests = [
     {
       id: 1,
