@@ -7,6 +7,7 @@ import studentRoutes from './routes/studentRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import superAdminRoutes from './routes/superAdminRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import leetcodeRoute from "./routes/leetcodeRoute.js";
 
 dotenv.config();
 connectDB();
@@ -20,6 +21,7 @@ app.use('/api/students', studentRoutes);
 app.use('/api/admins', adminRoutes);
 app.use('/api/superadmins', superAdminRoutes);
 app.use('/api/auth', authRoutes);
+app.use("/api/leetcode", leetcodeRoute);
 
 app.get('/', (req, res) => {
   res.send('Backend API is running smoothly');

@@ -7,6 +7,9 @@ import Footer from "./Component/Basic/Footer";
 import Loader from "./Component/Basic/Loader";
 import ErrorBoundary from "./Component/Basic/ErrorBoundary";
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
+//components/Testing
+import LeetCodeStats from "./Component/Testing/LeetCodeStats";
+
 
 //pages
 import Home from "./Pages/Home";
@@ -37,6 +40,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/aptitude-test" element={<Aptitest />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/leetcode" element={<LeetCodeStats />} />
             <Route
               path="/dashboard"
               element={
