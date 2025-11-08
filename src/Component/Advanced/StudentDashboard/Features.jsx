@@ -54,7 +54,7 @@ const Features = () => {
   return (
     <div className="w-full mt-8 min-h-screen bg-background">
       {/* Header positioned after navbar */}
-      <div className="pt-8 pb-12 px-4 md:px-10">
+      <div className="  ">
         <h2 className="text-4xl font-bold text-primary text-center mb-2">
           Our Exciting Features
         </h2>

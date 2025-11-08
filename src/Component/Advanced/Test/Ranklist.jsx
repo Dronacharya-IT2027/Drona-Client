@@ -1,15 +1,32 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Linkedin, Download, Clock, Calendar, Award, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { Linkedin, TrendingUp } from 'lucide-react';
 
 // Rank List Component
-export const RankList = ({ students, currentUserId }) => {
+export const RankList = ({ students, currentUserId, loading }) => {
+  const [displayStudents, setDisplayStudents] = useState([]);
+  console.log(students); 
+
+  useEffect(() => {
+    if (students && students.length > 0) {
+      setDisplayStudents(students);
+      console.log("Students updated:", students);
+    }
+  }, [students]);
   const getCohort = (percentile) => {
     if (percentile >= 90) return { label: 'Top 10%', color: 'bg-secondary' };
     if (percentile >= 75) return { label: 'Top 25%', color: 'bg-accent1' };
     if (percentile >= 50) return { label: 'Top 50%', color: 'bg-accent2' };
     return { label: 'Below 50%', color: 'bg-gray-400' };
   };
+
+  if (loading) {
+    return (
+      <div className="bg-white rounded-xl shadow-md p-4 h-fit flex justify-center items-center">
+        <span className="text-primary font-semibold">Loading Rankings...</span>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -22,10 +39,10 @@ export const RankList = ({ students, currentUserId }) => {
         Rank List
       </h2>
       <div className="space-y-2 max-h-[400px] overflow-y-auto">
-        {students.map((student, idx) => {
+        {displayStudents.map((student, idx) => {
           const isCurrentUser = student.id === currentUserId;
           const cohort = getCohort(student.percentile);
-          
+
           return (
             <motion.div
               key={student.id}
@@ -33,20 +50,26 @@ export const RankList = ({ students, currentUserId }) => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: idx * 0.05 }}
               className={`flex items-center justify-between p-2.5 rounded-lg border transition-all ${
-                isCurrentUser 
-                  ? 'bg-secondary bg-opacity-10 border-secondary' 
+                isCurrentUser
+                  ? 'bg-secondary bg-opacity-10 border-secondary'
                   : 'bg-gray-50 border-gray-200 hover:border-accent1'
               }`}
             >
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-white text-xs ${cohort.color} flex-shrink-0`}>
-                  {idx + 1}
+                <div
+                  className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-white text-xs ${cohort.color} flex-shrink-0`}
+                >
+                  {student.rank || idx + 1}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm truncate ${isCurrentUser ? 'font-bold text-primary' : 'font-semibold text-gray-800'}`}>
+                  <p
+                    className={`text-sm truncate ${
+                      isCurrentUser ? 'font-bold text-primary' : 'font-semibold text-gray-800'
+                    }`}
+                  >
                     {student.name}
                   </p>
-                  <p className="text-[10px] text-gray-500">{cohort.label}</p>
+                  <p className="text-[10px] text-gray-500">Enrollment Number - {student.percentile}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
