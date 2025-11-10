@@ -16,6 +16,14 @@ const userSchema = new mongoose.Schema(
     // Permissions / role
     role: { type: String, enum: ['student', 'admin'], default: 'student' },
 
+    isVerified: { 
+      type: Boolean, 
+      default: false 
+    },
+    verificationToken: { 
+      type: String 
+    },
+
     // Tests given by the user
     testsGiven: [
       {
@@ -34,5 +42,9 @@ const userSchema = new mongoose.Schema(
 // Create index on enrollmentNumber (unique)
 userSchema.index({ enrollmentNumber: 1 }, { unique: true });
 userSchema.index({ email: 1 }, { unique: true });
+
+userSchema.index({ email: 1, isVerified: 1 });
+userSchema.index({ verificationToken: 1 });
+
 
 module.exports = mongoose.model('User', userSchema);

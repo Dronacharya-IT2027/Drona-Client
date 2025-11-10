@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const authMiddleware = require('../middlewares/auth');
 const Test = require('../models/Test');
+const OTP = require('../models/OTP');
+const { sendOTPEmail } = require('../utils/emailService');
+const { generateOTP, generateVerificationToken, isOTPExpired } = require('../utils/otpGenerator');
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret';
@@ -14,6 +17,264 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // POST /api/auth/signup
 // Body: { name, enrollmentNumber, email, password, linkedin, leetcode, github }
+
+router.post('/send-signup-otp', async (req, res) => {
+  try {
+    const { name, enrollmentNumber, email, password, linkedin = '', leetcode = '', github = '', branch } = req.body;
+
+    // Basic validation
+    if (!name || !enrollmentNumber || !email || !password) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Name, enrollmentNumber, email and password are required.' 
+      });
+    }
+    
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Invalid email format.' 
+      });
+    }
+    
+    if (password.length < 6) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Password must be at least 6 characters.' 
+      });
+    }
+
+    // Check existing enrollment or email
+    const existEnroll = await User.findOne({ enrollmentNumber: enrollmentNumber.trim() });
+    if (existEnroll) {
+      return res.status(409).json({ 
+        success: false,
+        message: 'Enrollment number already registered.' 
+      });
+    }
+
+    const existEmail = await User.findOne({ email: email.trim().toLowerCase() });
+    if (existEmail) {
+      return res.status(409).json({ 
+        success: false,
+        message: 'Email already registered.' 
+      });
+    }
+
+    // Generate OTP and verification token
+    const otp = generateOTP();
+    const verificationToken = generateVerificationToken();
+    const expiresAt = new Date(Date.now() + (process.env.OTP_EXPIRY_MINUTES || 10) * 60 * 1000);
+
+    // Save OTP to database (replace existing if any)
+    await OTP.findOneAndDelete({ email });
+    await OTP.create({
+      email: email.trim().toLowerCase(),
+      otp,
+      expiresAt,
+      verificationToken
+    });
+
+    // Hash password for temporary storage
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    // Create temporary unverified user (replace existing if any)
+    await User.findOneAndDelete({ email: email.trim().toLowerCase(), isVerified: false });
+    
+    const tempUser = new User({
+      name: name.trim(),
+      enrollmentNumber: enrollmentNumber.trim(),
+      email: email.trim().toLowerCase(),
+      passwordHash,
+      linkedin: linkedin.trim(),
+      leetcode: leetcode.trim(),
+      github: github.trim(),
+      branch: branch.trim(),
+      totalMarks: 0,
+      testsGiven: [],
+      role: 'student',
+      isVerified: false,
+      verificationToken
+    });
+
+    await tempUser.save();
+
+    // Send OTP email
+    await sendOTPEmail(email, otp, name);
+
+    res.json({
+      success: true,
+      message: 'OTP sent successfully to your email',
+      verificationToken,
+      email: email.trim().toLowerCase()
+    });
+
+  } catch (error) {
+    console.error('Send OTP error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error' 
+    });
+  }
+});
+
+// POST /api/auth/verify-signup-otp
+router.post('/verify-signup-otp', async (req, res) => {
+  try {
+    const { email, otp, verificationToken } = req.body;
+
+    if (!email || !otp || !verificationToken) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Email, OTP and verification token are required.' 
+      });
+    }
+
+    // Find OTP record
+    const otpRecord = await OTP.findOne({ email });
+    
+    if (!otpRecord) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'OTP not found or expired. Please request a new OTP.' 
+      });
+    }
+
+    // Check if OTP is expired
+    if (isOTPExpired(otpRecord.expiresAt)) {
+      await OTP.findOneAndDelete({ email });
+      await User.findOneAndDelete({ email, isVerified: false });
+      return res.status(400).json({ 
+        success: false, 
+        message: 'OTP has expired. Please request a new OTP.' 
+      });
+    }
+
+    // Verify OTP and token
+    if (otpRecord.otp !== otp || otpRecord.verificationToken !== verificationToken) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid OTP.' 
+      });
+    }
+
+    // Find and verify user
+    const user = await User.findOne({ 
+      email: email.trim().toLowerCase(), 
+      verificationToken,
+      isVerified: false 
+    });
+
+    if (!user) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'User not found or already verified.' 
+      });
+    }
+
+    // Mark user as verified and clear verification token
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    // Delete used OTP
+    await OTP.findOneAndDelete({ email });
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, role: user.role }, 
+      JWT_SECRET, 
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
+    res.json({
+      success: true,
+      message: 'Account verified successfully!',
+      user: {
+        id: user._id,
+        name: user.name,
+        enrollmentNumber: user.enrollmentNumber,
+        email: user.email,
+        linkedin: user.linkedin,
+        leetcode: user.leetcode,
+        github: user.github,
+        role: user.role,
+        branch: user.branch,
+        totalMarks: user.totalMarks,
+        testsGiven: user.testsGiven,
+        isVerified: user.isVerified
+      },
+      token
+    });
+
+  } catch (error) {
+    console.error('Verify OTP error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error' 
+    });
+  }
+});
+
+// POST /api/auth/resend-signup-otp
+router.post('/resend-signup-otp', async (req, res) => {
+  try {
+    const { email, verificationToken } = req.body;
+
+    if (!email || !verificationToken) {
+      return res.status(400).json({ 
+        success: false,
+        message: 'Email and verification token are required.' 
+      });
+    }
+
+    // Find temporary user
+    const user = await User.findOne({ 
+      email: email.trim().toLowerCase(), 
+      verificationToken,
+      isVerified: false 
+    });
+
+    if (!user) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'User not found or already verified.' 
+      });
+    }
+
+    // Generate new OTP
+    const otp = generateOTP();
+    const expiresAt = new Date(Date.now() + (process.env.OTP_EXPIRY_MINUTES || 10) * 60 * 1000);
+
+    // Update OTP in database
+    await OTP.findOneAndDelete({ email });
+    await OTP.create({
+      email: email.trim().toLowerCase(),
+      otp,
+      expiresAt,
+      verificationToken
+    });
+
+    // Send new OTP email
+    await sendOTPEmail(email, otp, user.name);
+
+    res.json({
+      success: true,
+      message: 'New OTP sent successfully to your email',
+      verificationToken
+    });
+
+  } catch (error) {
+    console.error('Resend OTP error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error' 
+    });
+  }
+});
+
+
 router.post('/signup', async (req, res) => {
   try {
     const { name, enrollmentNumber, email, password, linkedin = '', leetcode = '', github = '', branch} = req.body;
