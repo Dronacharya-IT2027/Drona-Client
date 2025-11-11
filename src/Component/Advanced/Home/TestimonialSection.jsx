@@ -4,55 +4,95 @@ const TestimonialSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const testimonials = [
-    {
-      id: 1,
-      name: "Sarah Johnson",
-      role: "Web Developer",
-      image: "/path-to-testimonial-photo-1.jpg",
-      text: "The courses helped me transition into tech. The practical approach and real-world projects made learning enjoyable and effective.",
-      rating: 5
-    },
-    {
-      id: 2,
-      name: "Michael Chen",
-      role: "Digital Marketer",
-      image: "/path-to-testimonial-photo-2.jpg",
-      text: "Amazing learning experience! The free courses are high quality and the instructors are knowledgeable. Highly recommend!",
-      rating: 5
-    },
-    {
-      id: 3,
-      name: "Emily Rodriguez",
-      role: "UX Designer",
-      image: "/path-to-testimonial-photo-3.jpg",
-      text: "I gained valuable skills that helped me land my dream job. The course structure is perfect for beginners.",
-      rating: 5
-    },
-    {
-      id: 4,
-      name: "David Kim",
-      role: "Data Analyst",
-      image: "/path-to-testimonial-photo-4.jpg",
-      text: "The learning platform is intuitive and the content is always up-to-date. Best decision I made for my career!",
-      rating: 5
-    },
-    {
-      id: 5,
-      name: "Jessica Brown",
-      role: "Product Manager",
-      image: "/path-to-testimonial-photo-5.jpg",
-      text: "Excellent courses with practical examples. The community support is outstanding and helped me throughout my journey.",
-      rating: 5
-    },
-    {
-      id: 6,
-      name: "Alex Turner",
-      role: "Software Engineer",
-      image: "/path-to-testimonial-photo-6.jpg",
-      text: "From zero to hero! These courses gave me the confidence and skills to pursue my passion in technology.",
-      rating: 5
-    }
-  ];
+  {
+    id: 1,
+    name: "Sarah Johnson",
+    role: "Placed at Google",
+    company: "Software Engineer",
+    image: "/path-to-testimonial-photo-1.jpg",
+    text: "The mock tests perfectly simulated real interview conditions. I cracked 3 FAANG companies with consistent practice on this platform!",
+    rating: 5,
+    package: "₹42 LPA",
+    preparationTime: "3 months"
+  },
+  {
+    id: 2,
+    name: "Michael Chen",
+    role: "Placed at Microsoft",
+    company: "Frontend Developer",
+    image: "/path-to-testimonial-photo-2.jpg",
+    text: "The aptitude tests were spot-on! The DSA questions were exactly what I encountered in my actual interviews. Highly recommended!",
+    rating: 5,
+    package: "₹35 LPA",
+    preparationTime: "4 months"
+  },
+  {
+    id: 3,
+    name: "Emily Rodriguez",
+    role: "Placed at Amazon",
+    company: "SDE 1",
+    image: "/path-to-testimonial-photo-3.jpg",
+    text: "From campus placements to Amazon - this platform's mock tests and coding challenges were crucial for my preparation journey.",
+    rating: 5,
+    package: "₹38 LPA",
+    preparationTime: "5 months"
+  },
+  {
+    id: 4,
+    name: "David Kim",
+    role: "Placed at Goldman Sachs",
+    company: "Quantitative Analyst",
+    image: "/path-to-testimonial-photo-4.jpg",
+    text: "The quantitative aptitude tests helped me immensely. The platform's questions matched the actual difficulty level perfectly.",
+    rating: 5,
+    package: "₹45 LPA",
+    preparationTime: "2 months"
+  },
+  {
+    id: 5,
+    name: "Jessica Brown",
+    role: "Placed at Adobe",
+    company: "Product Manager",
+    image: "/path-to-testimonial-photo-5.jpg",
+    text: "The behavioral and HR mock interviews gave me the confidence to ace my final rounds. Excellent platform for holistic preparation!",
+    rating: 5,
+    package: "₹32 LPA",
+    preparationTime: "3 months"
+  },
+  {
+    id: 6,
+    name: "Alex Turner",
+    role: "Placed at Meta",
+    company: "Data Scientist",
+    image: "/path-to-testimonial-photo-6.jpg",
+    text: "System design mock tests were incredibly detailed. The platform helped me transition from service-based to product-based company!",
+    rating: 5,
+    package: "₹40 LPA",
+    preparationTime: "6 months"
+  },
+  {
+    id: 7,
+    name: "Priya Sharma",
+    role: "Placed at Flipkart",
+    company: "Backend Engineer",
+    image: "/path-to-testimonial-photo-7.jpg",
+    text: "The coding challenges and timed tests improved my problem-solving speed significantly. Landed my dream job in e-commerce!",
+    rating: 5,
+    package: "₹28 LPA",
+    preparationTime: "4 months"
+  },
+  {
+    id: 8,
+    name: "Rahul Verma",
+    role: "Placed at Uber",
+    company: "Mobile Developer",
+    image: "/path-to-testimonial-photo-8.jpg",
+    text: "Platform's mock tests covered all important patterns. The detailed solutions helped me understand optimal approaches.",
+    rating: 5,
+    package: "₹36 LPA",
+    preparationTime: "3 months"
+  }
+];
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -68,7 +108,7 @@ const TestimonialSection = () => {
       <div
         className="hidden lg:block absolute inset-0 bg-cover bg-right bg-no-repeat"
         style={{
-          backgroundImage: "url('/assests/2.png')",
+          backgroundImage: "url('/assests/2.webp')",
         }}
       ></div>
 
@@ -76,7 +116,7 @@ const TestimonialSection = () => {
       <div
         className="hidden md:block lg:hidden absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url('/assests/7.png')",
+          backgroundImage: "url('/assests/7.webp')",
         }}
       ></div>
 
