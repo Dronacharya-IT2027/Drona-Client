@@ -152,7 +152,7 @@ const ProfileCard = () => {
 
           <div className="flex flex-col items-center">
             <MdSchool className="text-xl md:text-2xl text-secondary" />
-            <p className="text-xs md:text-sm font-medium mt-1 text-accent1">{student?.tests.length || 0}</p>
+            <p className="text-xs md:text-sm font-medium mt-1 text-accent1">24</p>
           </div>
         </div>
       </div>
@@ -189,7 +189,7 @@ const ProfileCard = () => {
                         isCurrent ? "bg-accent2 text-primary" : "bg-gray-300 text-gray-600"
                       }`}
                     >
-                      {student?.rank}
+                      {student.rank}
                     </div>
                     <span className={`font-semibold text-sm md:text-base ${isCurrent ? "text-white" : "text-gray-600"}`}>
                       {student.name}
@@ -253,7 +253,7 @@ const ProfileCard = () => {
                 >
                   <div className="flex items-center space-x-4">
                     <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-white font-bold shadow">
-                      {student?.rank}
+                      {student.rank}
                     </div>
                     <span className="font-bold text-primary">{student.name}</span>
                     <span className="font-bold text-primary">{student.enrollmentNumber}</span>

@@ -10,15 +10,11 @@ import Navbar from "./Component/Basic/Navbar";
 import Footer from "./Component/Basic/Footer";
 import Loader from "./Component/Basic/Loader";
 import ErrorBoundary from "./Component/Basic/ErrorBoundary";
-import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
-//components/Testing
-import LeetCodeStats from "./Component/Testing/LeetCodeStats";
 
 
 //pages
 import Home from "./Pages/Home";
 import About from "./Pages/About";
-import Login from "./Pages/Login";
 import Aptitest from "./Pages/Services";
 import Contact from "./Pages/Contact";
 import StudentDashboard from "./Pages/StudentDashbord";

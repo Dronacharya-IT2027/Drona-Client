@@ -9,6 +9,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-transparent backdrop-blur-sm px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex justify-between items-center">
+      
       {/* Logo */}
       <h1
         onClick={() => navigate("/")}
