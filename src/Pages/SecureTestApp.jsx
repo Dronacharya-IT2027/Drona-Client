@@ -130,24 +130,50 @@ const TestInterface = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const testContainerRef = useRef(null);
   const [totalTimeRemaining, setTotalTimeRemaining] = useState(totalDuration);
+  // submit guard so multiple sources don't submit twice
+  const submittedRef = useRef(false);
+  const submitOnce = (fn) => {
+    if (submittedRef.current) return false;
+    submittedRef.current = true;
+    fn();
+    return true;
+  };
 
-  useEffect(() => {
-    setQuestionTimeRemaining(questionTime);
-  }, [currentQuestionIndex, questionTime]);
+  // reset per-question time whenever question changes or questionTime prop changes
+useEffect(() => {
+  setQuestionTimeRemaining(questionTime ?? 0);
+}, [currentQuestionIndex, questionTime]);
 
+// single per-question timer (auto-next or submit on last question)
   useEffect(() => {
-    const questionTimer = setInterval(() => {
+    const id = setInterval(() => {
       setQuestionTimeRemaining((prev) => {
         if (prev <= 1) {
-          handleNextQuestion();
-          return questionTime || 0;
+          const isLast = currentQuestionIndex === shuffledQuestions.length - 1;
+
+          if (isLast) {
+            // last question: submit the test
+            handleSubmit();
+          } else {
+            // mark skipped if not answered
+            const qid = shuffledQuestions[currentQuestionIndex].id;
+            if (!answers[qid]) {
+              setAnswers((p) => ({ ...p, [qid]: "skipped" }));
+            }
+            // go to next question
+            setCurrentQuestionIndex((idx) => idx + 1);
+          }
+
+          // immediately set next question's time for UI
+          return questionTime ?? 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    return () => clearInterval(questionTimer);
-  }, [currentQuestionIndex, questionTime]);
+    return () => clearInterval(id);
+  }, [currentQuestionIndex, shuffledQuestions, questionTime, answers]);
+
 
   const currentQuestion = shuffledQuestions[currentQuestionIndex];
   const answeredCount = Object.keys(answers).length;
@@ -270,7 +296,7 @@ const TestInterface = ({
 
   // Timers
   useEffect(() => {
-    const totalTimer = setInterval(() => {
+    const id = setInterval(() => {
       setTotalTimeRemaining((prev) => {
         if (prev <= 1) {
           handleSubmit();
@@ -279,28 +305,9 @@ const TestInterface = ({
         return prev - 1;
       });
     }, 1000);
-
-    return () => clearInterval(totalTimer);
+    return () => clearInterval(id);
   }, []);
-
-  useEffect(() => {
-    setQuestionTimeRemaining(questionTime);
-  }, [currentQuestionIndex]);
-
-  useEffect(() => {
-    const questionTimer = setInterval(() => {
-      setQuestionTimeRemaining((prev) => {
-        if (prev <= 1) {
-          handleNextQuestion();
-          return questionTime;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(questionTimer);
-  }, [currentQuestionIndex]);
-
+  
   const recordViolation = (type) => {
     setViolations((prev) => [
       ...prev,
@@ -333,18 +340,8 @@ const TestInterface = ({
     }
   };
 
-  const handlePreviousQuestion = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((prev) => prev - 1);
-    }
-  };
-
-  const goToQuestion = (index) => {
-    setCurrentQuestionIndex(index);
-  };
-
   const handleSubmit = () => {
-    onSubmit(answers, violations);
+    submitOnce(() => onSubmit(answers, violations));
   };
 
   const getQuestionStatus = (question) => {
