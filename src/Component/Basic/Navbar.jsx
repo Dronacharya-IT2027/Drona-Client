@@ -1,6 +1,6 @@
 // src/Component/Basic/Navbar.jsx
 import React, { useContext } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate,Link } from "react-router-dom";
 import AuthContext from "../../auth/authContext";
 
 const Navbar = () => {
@@ -15,8 +15,8 @@ const Navbar = () => {
         onClick={() => navigate("/")}
         className="cursor-pointer font-kodchasan text-xl sm:text-2xl font-black tracking-tight"
       >
-        <span className="text-secondary">Learn</span>
-        <span className="text-black">ify</span>
+        <span className="text-secondary">Dro</span>
+        <span className="text-black">naa</span>
       </h1>
 
       {/* Right Side */}
@@ -49,12 +49,14 @@ const Navbar = () => {
             </div>
 
             {/* Logout Button */}
+            <Link to="/">
             <button
               onClick={logout}
               className="px-3 sm:px-4 py-1.5 bg-red-500 text-white rounded-full text-sm sm:text-base font-medium hover:bg-red-600 transition-all duration-200"
             >
               Logout
             </button>
+            </Link>
           </div>
         )}
       </div>

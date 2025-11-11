@@ -16,7 +16,7 @@ const ProtectedRoute = ({ children }) => {
 
   if (!user) {
     console.log("ProtectedRoute: no user, redirecting to signup");
-    return <Navigate to="/signup" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   console.log("ProtectedRoute: user authenticated:", user);
