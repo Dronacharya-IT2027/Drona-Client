@@ -9,6 +9,7 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendOTPEmail = async (email, otp, name) => {
+  console.log(`→ Preparing to send OTP to ${otp}`);
   const mailOptions = {
     from: `"Drona Platform" <${process.env.EMAIL_USER}>`,
     to: email,

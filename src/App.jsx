@@ -30,6 +30,7 @@ import Admin from "./Pages/Admin";
 //superadmin
 
 import SuperAdminDashboard from "./Pages/SuperAdmin";
+import AdminSignupRequests from "./Pages/AdminRequest";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
                 <Route path="/about" element={<About />} />
                 <Route path="/aptitude-test" element={<ProtectedRoute><Aptitest /></ProtectedRoute>} />
                 <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+                <Route path="/review" element={<ProtectedRoute><AdminSignupRequests /></ProtectedRoute>} />
                 <Route path="/dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
                 <Route path= "/GD-and-Interview" element = {<GDandInterviewpage/>}/>
                 <Route path= "/test" element = {<ProtectedRoute><SecureTestApp/></ProtectedRoute>}/>
