@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import CertifiedTeachersBadge from "./CertifiedTeachersBadge";
 import StatsCards from "./StatsCards";
+import { Link } from "react-router-dom";
+
 
 export default function Hero() {
   const [bgImage, setBgImage] = useState("");
@@ -45,9 +47,11 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-4 sm:gap-6">
+            <Link to="/dashboard">
             <button className="bg-secondary text-white px-5 sm:px-6 md:px-7 py-2.5 sm:py-3 text-sm sm:text-base rounded-full font-semibold shadow-md hover:bg-orange-600 transition-all duration-200 border-2 border-primary backdrop-blur-sm">
-              Find course
+              Get Started
             </button>
+            </Link>
             <button className="text-secondary mt-3 font-medium flex items-center space-x-2 text-sm sm:text-base hover:text-orange-600 transition-colors duration-200">
               <span>View our blog</span>
               <span className="text-lg sm:text-xl">↗</span>
