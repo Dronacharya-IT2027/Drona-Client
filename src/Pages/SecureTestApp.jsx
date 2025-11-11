@@ -14,45 +14,6 @@ const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   "";
 
-const testData = {
-  testId: "demo_test_01",
-  title: "Demo Test",
-  totalDuration: 600, // 10 minutes in seconds
-  questionTime: 120, // 2 minutes per question
-  questions: [
-    {
-      id: "Q1",
-      question: "This is question 1?",
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option B",
-    },
-    {
-      id: "Q2",
-      question: "This is question 2?",
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option D",
-    },
-    {
-      id: "Q3",
-      question: "This is question 3?",
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option A",
-    },
-    {
-      id: "Q4",
-      question: "This is question 4?",
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option C",
-    },
-    {
-      id: "Q5",
-      question: "This is question 5?",
-      options: ["Option A", "Option B", "Option C", "Option D"],
-      correctAnswer: "Option B",
-    },
-  ],
-};
-
 // Shuffle array utility
 const shuffleArray = (array) => {
   const newArray = [...array];
@@ -105,7 +66,7 @@ const TestStartScreen = ({ test, loading, error, onStart }) => {
           </p>
           <p className="text-primary">
             <span className="font-semibold">Per Question:</span>{" "}
-            {Math.floor(test.questionTime / 60)} minutes
+            {Math.floor(test.questionTime)} seconds
           </p>
         </div>
         {/* anti-cheat block unchanged */}
@@ -155,6 +116,7 @@ const QuestionBlock = ({ qNum, status, onClick, isActive }) => {
 
 const TestInterface = ({
   testID, 
+  title,
   shuffledQuestions,
   onSubmit,
   questionTime,
@@ -163,18 +125,14 @@ const TestInterface = ({
 }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState({});
-  const [questionTimeRemaining, setQuestionTimeRemaining] = useState(
-    testData.questionTime
-  );
+  const [questionTimeRemaining, setQuestionTimeRemaining] = useState(questionTime);
   const [violations, setViolations] = useState([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const testContainerRef = useRef(null);
-  const [totalTimeRemaining, setTotalTimeRemaining] = useState(
-    totalDuration || 0
-  );
+  const [totalTimeRemaining, setTotalTimeRemaining] = useState(totalDuration);
 
   useEffect(() => {
-    setQuestionTimeRemaining(questionTime || 0);
+    setQuestionTimeRemaining(questionTime);
   }, [currentQuestionIndex, questionTime]);
 
   useEffect(() => {
@@ -326,7 +284,7 @@ const TestInterface = ({
   }, []);
 
   useEffect(() => {
-    setQuestionTimeRemaining(testData.questionTime);
+    setQuestionTimeRemaining(questionTime);
   }, [currentQuestionIndex]);
 
   useEffect(() => {
@@ -334,7 +292,7 @@ const TestInterface = ({
       setQuestionTimeRemaining((prev) => {
         if (prev <= 1) {
           handleNextQuestion();
-          return testData.questionTime;
+          return questionTime;
         }
         return prev - 1;
       });
@@ -474,7 +432,7 @@ const TestInterface = ({
         {/* Left Panel - 25% */}
         <div className="w-full md:w-1/4 bg-primary border-4 border-secondary rounded-lg text-white p-3 md:p-4 overflow-y-auto">
           <h2 className="text-lg md:text-xl font-bold mb-2 md:mb-3">
-            {testData.title}
+            {title}
           </h2>
 
           <div className="space-y-2 mb-3 md:mb-4 text-xs md:text-sm">
@@ -502,7 +460,7 @@ const TestInterface = ({
                   key={q.id}
                   qNum={idx + 1}
                   status={getQuestionStatus(q)}
-                  onClick={() => !submitting && goToQuestion(idx)}
+                  // onClick={() => !submitting && goToQuestion(idx)}
                   isActive={idx === currentQuestionIndex}
                 />
               ))}
@@ -558,13 +516,13 @@ const TestInterface = ({
           </div>
 
           <div className="flex justify-between gap-2 md:gap-4">
-            <button
+            {/* <button
               onClick={handlePreviousQuestion}
               disabled={currentQuestionIndex === 0 || submitting}
               className="px-4 md:px-6 py-2 md:py-3 bg-gray-400 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-500 transition-all text-sm md:text-base"
             >
               Previous
-            </button>
+            </button> */}
 
             {currentQuestionIndex === shuffledQuestions.length - 1 ? (
               <button
@@ -826,6 +784,7 @@ const SecureTestApp = () => {
         if (res.data && res.data.success && res.data.test) {
           // server returns { success: true, test: { testId, title, totalDuration, questionTime, questions: [...] } }
           setApiTest(res.data.test);
+          console.log("Fetched test data:", res.data.test);
         } else {
           throw new Error(res.data?.message || "Invalid response from server");
         }
@@ -856,6 +815,7 @@ const SecureTestApp = () => {
       {testState === "testing" && (
         <TestInterface
           testID={testId}
+          title={apiTest.title}
           shuffledQuestions={shuffledQuestions}
           onSubmit={handleSubmitTest}
           questionTime={apiTest?.questionTime}
