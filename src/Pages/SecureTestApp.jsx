@@ -138,41 +138,45 @@ const TestInterface = ({
     fn();
     return true;
   };
-
-  // reset per-question time whenever question changes or questionTime prop changes
+  // ✅ latest answers without triggering effect reruns
+const answersRef = useRef(answers);
 useEffect(() => {
+  answersRef.current = answers;
+}, [answers]);
+
+// ✅ corrected per-question timer (NO 'answers' in dependency)
+useEffect(() => {
+  // reset timer at start of each question
   setQuestionTimeRemaining(questionTime ?? 0);
-}, [currentQuestionIndex, questionTime]);
 
-// single per-question timer (auto-next or submit on last question)
-  useEffect(() => {
-    const id = setInterval(() => {
-      setQuestionTimeRemaining((prev) => {
-        if (prev <= 1) {
-          const isLast = currentQuestionIndex === shuffledQuestions.length - 1;
+  // UI countdown (every 1 sec)
+  const tick = setInterval(() => {
+    setQuestionTimeRemaining((prev) => Math.max(prev - 1, 0));
+  }, 1000);
 
-          if (isLast) {
-            // last question: submit the test
-            handleSubmit();
-          } else {
-            // mark skipped if not answered
-            const qid = shuffledQuestions[currentQuestionIndex].id;
-            if (!answers[qid]) {
-              setAnswers((p) => ({ ...p, [qid]: "skipped" }));
-            }
-            // go to next question
-            setCurrentQuestionIndex((idx) => idx + 1);
-          }
+  // auto-next / auto-submit (fires ONCE)
+  const expiry = setTimeout(() => {
+    const isLast = currentQuestionIndex === shuffledQuestions.length - 1;
+    const qid = shuffledQuestions[currentQuestionIndex]?.id;
 
-          // immediately set next question's time for UI
-          return questionTime ?? 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    // mark skipped ONLY if not answered
+    if (qid && !answersRef.current[qid]) {
+      setAnswers((prev) => ({ ...prev, [qid]: "skipped" }));
+    }
 
-    return () => clearInterval(id);
-  }, [currentQuestionIndex, shuffledQuestions, questionTime, answers]);
+    if (isLast) {
+      handleSubmit();
+    } else {
+      setCurrentQuestionIndex((idx) => idx + 1);
+    }
+  }, (questionTime ?? 0) * 1000);
+
+  return () => {
+    clearInterval(tick);
+    clearTimeout(expiry);
+  };
+}, [currentQuestionIndex, questionTime, shuffledQuestions.length]);
+
 
 
   const currentQuestion = shuffledQuestions[currentQuestionIndex];
