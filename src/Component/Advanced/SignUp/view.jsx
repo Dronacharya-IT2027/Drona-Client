@@ -378,7 +378,7 @@ export default function SignUp() {
                   </div>
 
                   <div className="space-y-2 md:col-span-2">
-                    <label className="text-sm font-medium text-primary/80">Branch</label>
+                    <label className="text-sm font-medium text-primary/80">Section</label>
                     <div className="relative">
                       <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
                       <input
