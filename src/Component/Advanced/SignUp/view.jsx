@@ -13,6 +13,8 @@ import {
   Shield,
   ArrowLeft,
   CheckCircle2,
+  ArrowRight,
+  Code,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../../auth/authContext";
@@ -35,27 +37,20 @@ const initialState = {
   github: "",
 };
 
-/**
- * UPDATED SIGNUP (Review Flow)
- * ------------------------------------------------------
- * Step 1: Submit details → POST /api/auth/send-signup-otp
- * Step 2: Enter OTP → POST /api/auth/verify-signup-otp
- * Step 3: Show "Under Review" confirmation (no account yet, no token)
- */
 export default function SignUp() {
   const [form, setForm] = useState(initialState);
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [step, setStep] = useState(1); // 1: Basic info, 2: OTP verification, 3: Under Review
+  const [step, setStep] = useState(1);
   const [verificationToken, setVerificationToken] = useState("");
   const [resendLoading, setResendLoading] = useState(false);
   const [requestId, setRequestId] = useState("");
-  const [cooldown, setCooldown] = useState(0); // seconds for resend cooldown (optional UX)
+  const [cooldown, setCooldown] = useState(0);
 
   const navigate = useNavigate();
-  const { verify } = useContext(AuthContext); // not used for auto-login in review flow, but keep for future
+  const { verify } = useContext(AuthContext);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -89,7 +84,6 @@ export default function SignUp() {
     setOtp(value);
   };
 
-  // Step 1: Send OTP (does NOT create user)
   const handleSendOTP = async (e) => {
     e.preventDefault();
     setError(null);
@@ -131,7 +125,7 @@ export default function SignUp() {
       setVerificationToken(data.verificationToken);
       setStep(2);
       setError(null);
-      setCooldown(30); // optional 30s cooldown before resend
+      setCooldown(30);
     } catch (err) {
       console.error("Send OTP error:", err);
       setError({ title: "Network error", message: "Unable to reach server. Please try again." });
@@ -140,7 +134,6 @@ export default function SignUp() {
     }
   };
 
-  // Step 2: Verify OTP → creates SignupRequest (UNDER REVIEW)
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
     setError(null);
@@ -174,9 +167,8 @@ export default function SignUp() {
         return;
       }
 
-      // New flow: No token/user returned here. We just got requestId and success message.
       setRequestId(data?.requestId || "");
-      setStep(3); // Under Review screen
+      setStep(3);
       setError(null);
     } catch (err) {
       console.error("Verify OTP error:", err);
@@ -186,7 +178,6 @@ export default function SignUp() {
     }
   };
 
-  // Resend OTP
   const handleResendOTP = async () => {
     if (cooldown > 0) return;
     setResendLoading(true);
@@ -231,294 +222,285 @@ export default function SignUp() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent2/10 to-accent1/10 p-4 font-kodchasan">
-      <div className="w-full max-w-3xl bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl border border-primary/10 overflow-hidden">
-        <div className="flex flex-col lg:flex-row">
-          {/* Left - visual column */}
-          <div className="w-full lg:w-1/2 p-8 sm:p-10 bg-gradient-to-b from-secondary/5 to-accent1/5 flex flex-col items-center justify-center">
-            {step === 1 && (
-              <>
-                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-xl bg-gradient-to-tr from-secondary to-accent1 flex items-center justify-center shadow-lg mb-4">
-                  <UserPlus className="w-12 h-12 text-white" />
+      <div className="w-full max-w-4xl mt-20 bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl border border-primary/10 overflow-hidden">
+        <div className="flex flex-col lg:flex-row min-h-[600px]">
+          {/* Left - Brand Section (Matches Hero) */}
+          <div className="w-full lg:w-2/5 p-8 bg-gradient-to-br from-secondary/20 to-accent1/20 flex flex-col justify-between relative overflow-hidden">
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-secondary to-accent1 flex items-center justify-center shadow-lg">
+                  <UserPlus className="w-5 h-5 text-white" />
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Create your student account</h2>
-                <p className="text-sm text-primary/70 text-center px-6">
-                  Sign up to access skill development tests, track progress and participate in campus events.
-                </p>
-              </>
-            )}
-
-            {step === 2 && (
-              <>
-                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-xl bg-gradient-to-tr from-green-500 to-emerald-600 flex items-center justify-center shadow-lg mb-4">
-                  <Shield className="w-12 h-12 text-white" />
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Verify Your Email</h2>
-                <p className="text-sm text-primary/70 text-center px-6">
-                  We've sent a 6-digit OTP to your email address. Please enter it below to verify your email.
-                </p>
-              </>
-            )}
-
-            {step === 3 && (
-              <>
-                <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-xl bg-gradient-to-tr from-indigo-500 to-blue-600 flex items-center justify-center shadow-lg mb-4">
-                  <CheckCircle2 className="w-12 h-12 text-white" />
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Request Submitted</h2>
-                <p className="text-sm text-primary/70 text-center px-6">
-                  Your signup request is <span className="font-semibold">under review</span> by your branch admin.
-                  You'll be able to log in once it's accepted.
-                </p>
-              </>
-            )}
-
-            <div className="mt-6 w-full px-2">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="text-xs text-primary/60">Student</div>
-                <div className="text-xs text-primary/60 text-right">Step {step} of 3</div>
+                <span className="text-xl font-bold text-primary">Smart Placement</span>
               </div>
-              {/* Progress bar */}
-              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-accent1 rounded-full h-2 transition-all duration-300"
-                  style={{ width: step === 1 ? "33%" : step === 2 ? "66%" : "100%" }}
-                ></div>
+
+              <div className="space-y-6">
+                <h1 className="text-3xl lg:text-4xl font-bold leading-tight">
+                  Join <span className="text-secondary">Smart</span>{" "}
+                  <span className="text-accent1">Placement</span> Prep
+                </h1>
+                
+                <p className="text-primary/80 text-lg leading-relaxed">
+                  Start your journey to ace placements with comprehensive aptitude, GD, and interview training.
+                </p>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-primary/70">
+                    <div className="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 text-secondary" />
+                    </div>
+                    <span className="text-sm">Aptitude & Technical Tests</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-primary/70">
+                    <div className="w-6 h-6 rounded-full bg-accent1/20 flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 text-accent1" />
+                    </div>
+                    <span className="text-sm">Group Discussion Practice</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-primary/70">
+                    <div className="w-6 h-6 rounded-full bg-secondary/20 flex items-center justify-center">
+                      <CheckCircle2 className="w-3 h-3 text-secondary" />
+                    </div>
+                    <span className="text-sm">Interview Preparation</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="mt-6 text-xs text-primary/50 text-center px-6">
-              By signing up you agree to the platform's <span className="underline">Terms</span> and <span className="underline">Privacy</span>.
+            {/* Progress */}
+            <div className="relative z-10">
+              <div className="flex justify-between items-center text-sm text-primary/60 mb-2">
+                <span>Step {step} of 3</span>
+                <span>{step === 1 ? "Basic Info" : step === 2 ? "Verify Email" : "Complete"}</span>
+              </div>
+              <div className="w-full bg-white/50 rounded-full h-2">
+                <div
+                  className="bg-gradient-to-r from-secondary to-accent1 rounded-full h-2 transition-all duration-500 ease-out"
+                  style={{ width: step === 1 ? "33%" : step === 2 ? "66%" : "100%" }}
+                />
+              </div>
+            </div>
+
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-5">
+              <div className="absolute top-10 right-10 w-20 h-20 bg-secondary rounded-full"></div>
+              <div className="absolute bottom-10 left-10 w-16 h-16 bg-accent1 rounded-full"></div>
             </div>
           </div>
 
-          {/* Right - form */}
-          <div className="w-full lg:w-1/2 p-6 sm:p-8">
+          {/* Right - Form Section */}
+          <div className="w-full lg:w-3/5 p-8 lg:p-10 flex flex-col justify-center">
             {step === 1 && (
-              <form onSubmit={handleSendOTP} className="space-y-4">
-                {/* Error Alert */}
+              <form onSubmit={handleSendOTP} className="space-y-6">
+                <div className="text-center lg:text-left mb-6">
+                  <h2 className="text-2xl font-bold text-primary mb-2">Create Student Account</h2>
+                  <p className="text-primary/60">Enter your details to get started</p>
+                </div>
+
                 {error && (
-                  <div className="border-l-4 border-red-400 bg-red-50 p-3 rounded-md">
+                  <div className="p-4 rounded-lg bg-red-50 border border-red-200">
                     <div className="flex items-start gap-3">
-                      <div className="pt-0.5">
-                        <svg className="w-5 h-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                          <path
-                            fillRule="evenodd"
-                            d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-8.707 3.293a1 1 0 011.414 0l.003.003a1 1 0 01-1.414 1.414l-.003-.003a1 1 0 010-1.414zM9 7a1 1 0 10-2 0 1 1 0 002 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </div>
                       <div className="flex-1">
-                        <div className="font-semibold text-sm text-red-700">{error.title}</div>
-                        <div className="text-xs text-red-700/90">{error.message}</div>
+                        <div className="font-semibold text-red-800 text-sm">{error.title}</div>
+                        <div className="text-red-700 text-sm">{error.message}</div>
                       </div>
-                      <button type="button" onClick={() => setError(null)} className="text-red-500 hover:text-red-700 p-1">
+                      <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700">
                         ✕
                       </button>
                     </div>
                   </div>
                 )}
 
-                {/* Inputs Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <label className="input-group">
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-primary/60" />
-                      <span className="text-xs text-primary/70">Full name</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-primary/80">Full Name</label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+                      <input
+                        name="name"
+                        value={form.name}
+                        onChange={handleChange}
+                        placeholder="Manas Singh"
+                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                      />
                     </div>
-                    <input
-                      name="name"
-                      value={form.name}
-                      onChange={handleChange}
-                      placeholder="e.g. Manas Singh"
-                      className="mt-1 p-2 border border-primary/10 rounded-md bg-white text-sm outline-none focus:ring-2 focus:ring-accent1"
-                    />
-                  </label>
+                  </div>
 
-                  <label className="input-group">
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="w-4 h-4 text-primary/60" />
-                      <span className="text-xs text-primary/70">Enrollment No.</span>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-primary/80">Enrollment Number</label>
+                    <div className="relative">
+                      <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+                      <input
+                        name="enrollmentNumber"
+                        value={form.enrollmentNumber}
+                        onChange={handleChange}
+                        placeholder="CS25EN001"
+                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                      />
                     </div>
-                    <input
-                      name="enrollmentNumber"
-                      value={form.enrollmentNumber}
-                      onChange={handleChange}
-                      placeholder="e.g. CS25EN001"
-                      className="mt-1 p-2 border border-primary/10 rounded-md bg-white text-sm outline-none focus:ring-2 focus:ring-accent1"
-                    />
-                  </label>
+                  </div>
 
-                  <label className="input-group">
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-primary/60" />
-                      <span className="text-xs text-primary/70">Email</span>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-primary/80">Email</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+                      <input
+                        name="email"
+                        type="email"
+                        value={form.email}
+                        onChange={handleChange}
+                        placeholder="you@example.com"
+                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                      />
                     </div>
-                    <input
-                      name="email"
-                      type="email"
-                      value={form.email}
-                      onChange={handleChange}
-                      placeholder="you@example.com"
-                      className="mt-1 p-2 border border-primary/10 rounded-md bg-white text-sm outline-none focus:ring-2 focus:ring-accent1"
-                    />
-                  </label>
+                  </div>
 
-                  <label className="input-group relative">
-                    <div className="flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-primary/60" />
-                      <span className="text-xs text-primary/70">Password</span>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-primary/80">Password</label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+                      <input
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        value={form.password}
+                        onChange={handleChange}
+                        placeholder="min 6 characters"
+                        className="w-full pl-10 pr-12 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary/40 hover:text-primary/60"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
                     </div>
-                    <input
-                      name="password"
-                      type={showPassword ? "text" : "password"}
-                      autoComplete="new-password"
-                      value={form.password}
-                      onChange={handleChange}
-                      placeholder="min 6 characters"
-                      className="mt-1 p-2 pr-10 border border-primary/10 rounded-md bg-white text-sm outline-none focus:ring-2 focus:ring-accent1"
-                    />
-                    <button
-                      type="button"
-                      className="absolute right-3 top-10 text-primary/60 p-1"
-                      onClick={() => setShowPassword((s) => !s)}
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </label>
+                  </div>
 
-                  <label className="input-group col-span-1 sm:col-span-2">
-                    <div className="flex items-center gap-2">
-                      <BookOpen className="w-4 h-4 text-primary/60" />
-                      <span className="text-xs text-primary/70">Branch</span>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-sm font-medium text-primary/80">Branch</label>
+                    <div className="relative">
+                      <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+                      <input
+                        name="branch"
+                        value={form.branch}
+                        onChange={handleChange}
+                        placeholder="Computer Science & Engineering"
+                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                      />
                     </div>
-                    <input
-                      name="branch"
-                      value={form.branch}
-                      onChange={handleChange}
-                      placeholder="e.g. Computer Science"
-                      className="mt-1 p-2 border border-primary/10 rounded-md bg-white text-sm outline-none focus:ring-2 focus:ring-accent1"
-                    />
-                  </label>
+                  </div>
 
-                  <label className="input-group">
-                    <div className="flex items-center gap-2">
-                      <LinkIcon className="w-4 h-4 text-primary/60" />
-                      <span className="text-xs text-primary/70">LinkedIn</span>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-primary/80">LinkedIn</label>
+                    <div className="relative">
+                      <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+                      <input
+                        name="linkedin"
+                        value={form.linkedin}
+                        onChange={handleChange}
+                        placeholder="linkedin.com/in/username"
+                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                      />
                     </div>
-                    <input
-                      name="linkedin"
-                      value={form.linkedin}
-                      onChange={handleChange}
-                      placeholder="linkedin url or handle"
-                      className="mt-1 p-2 border border-primary/10 rounded-md bg-white text-sm outline-none focus:ring-2 focus:ring-accent1"
-                    />
-                  </label>
+                  </div>
 
-                  <label className="input-group">
-                    <div className="flex items-center gap-2">
-                      <Github className="w-4 h-4 text-primary/60" />
-                      <span className="text-xs text-primary/70">GitHub</span>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-primary/80">GitHub</label>
+                    <div className="relative">
+                      <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+                      <input
+                        name="github"
+                        value={form.github}
+                        onChange={handleChange}
+                        placeholder="github.com/username"
+                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                      />
                     </div>
-                    <input
-                      name="github"
-                      value={form.github}
-                      onChange={handleChange}
-                      placeholder="github handle"
-                      className="mt-1 p-2 border border-primary/10 rounded-md bg-white text-sm outline-none focus:ring-2 focus:ring-accent1"
-                    />
-                  </label>
+                  </div>
 
-                  <label className="input-group sm:col-span-2">
-                    <div className="flex items-center gap-2">
-                      <User className="w-4 h-4 text-primary/60" />
-                      <span className="text-xs text-primary/70">LeetCode</span>
+                  {/* LeetCode Field - Added Back */}
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-sm font-medium text-primary/80">LeetCode</label>
+                    <div className="relative">
+                      <Code className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+                      <input
+                        name="leetcode"
+                        value={form.leetcode}
+                        onChange={handleChange}
+                        placeholder="leetcode.com/username (optional)"
+                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                      />
                     </div>
-                    <input
-                      name="leetcode"
-                      value={form.leetcode}
-                      onChange={handleChange}
-                      placeholder="leetcode handle (optional)"
-                      className="mt-1 p-2 border border-primary/10 rounded-md bg-white text-sm outline-none focus:ring-2 focus:ring-accent1"
-                    />
-                  </label>
+                  </div>
                 </div>
 
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full flex items-center justify-center gap-3 px-4 py-2 bg-gradient-to-r from-secondary to-accent1 text-white font-semibold rounded-lg shadow hover:scale-[1.01] transition transform disabled:opacity-60"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="animate-spin w-4 h-4" />
-                        <span className="text-sm">Sending OTP...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="w-4 h-4" />
-                        <span className="text-sm">Send OTP</span>
-                      </>
-                    )}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-secondary to-accent1 text-white py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-3"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Sending OTP...
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="w-5 h-5" />
+                      Send OTP & Continue
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
+
+                <div className="text-center text-sm text-primary/60">
+                  Already have an account?{" "}
+                  <button type="button" onClick={() => navigate("/login")} className="text-secondary font-semibold hover:text-accent1 transition-colors">
+                    Log in
                   </button>
                 </div>
               </form>
             )}
 
             {step === 2 && (
-              <form onSubmit={handleVerifyOTP} className="space-y-4">
-                {/* Success/Error Alert */}
+              <form onSubmit={handleVerifyOTP} className="space-y-6">
+                <div className="text-center lg:text-left mb-6">
+                  <h2 className="text-2xl font-bold text-primary mb-2">Verify Your Email</h2>
+                  <p className="text-primary/60">
+                    Enter the OTP sent to <span className="font-semibold text-primary">{form.email}</span>
+                  </p>
+                </div>
+
                 {error && (
-                  <div
-                    className={`border-l-4 ${error.type === "success" ? "border-green-400 bg-green-50" : "border-red-400 bg-red-50"} p-3 rounded-md`}
-                  >
+                  <div className={`p-4 rounded-lg border ${
+                    error.type === "success" 
+                      ? "bg-green-50 border-green-200" 
+                      : "bg-red-50 border-red-200"
+                  }`}>
                     <div className="flex items-start gap-3">
-                      <div className="pt-0.5">
-                        {error.type === "success" ? (
-                          <svg className="w-5 h-5 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                              fillRule="evenodd"
-                              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        ) : (
-                          <svg className="w-5 h-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path
-                              fillRule="evenodd"
-                              d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-8.707 3.293a1 1 0 011.414 0l.003.003a1 1 0 01-1.414 1.414l-.003-.003a1 1 0 010-1.414zM9 7a1 1 0 10-2 0 1 1 0 002 0z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        )}
-                      </div>
                       <div className="flex-1">
-                        <div className={`font-semibold text-sm ${error.type === "success" ? "text-green-700" : "text-red-700"}`}>
+                        <div className={`font-semibold text-sm ${
+                          error.type === "success" ? "text-green-800" : "text-red-800"
+                        }`}>
                           {error.title}
                         </div>
-                        <div className={`text-xs ${error.type === "success" ? "text-green-700/90" : "text-red-700/90"}`}>
+                        <div className={`text-sm ${
+                          error.type === "success" ? "text-green-700" : "text-red-700"
+                        }`}>
                           {error.message}
                         </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setError(null)}
-                        className={error.type === "success" ? "text-green-500 hover:text-green-700 p-1" : "text-red-500 hover:text-red-700 p-1"}
-                      >
+                      <button onClick={() => setError(null)} className={
+                        error.type === "success" ? "text-green-500 hover:text-green-700" : "text-red-500 hover:text-red-700"
+                      }>
                         ✕
                       </button>
                     </div>
                   </div>
                 )}
 
-                <div className="text-center mb-6">
-                  <p className="text-sm text-primary/70 mb-4">
-                    Enter the 6-digit OTP sent to
-                    <br />
-                    <strong className="text-primary">{form.email}</strong>
-                  </p>
-
+                <div className="space-y-4">
                   <div className="relative">
                     <input
                       type="text"
@@ -526,27 +508,27 @@ export default function SignUp() {
                       pattern="[0-9]*"
                       value={otp}
                       onChange={handleOtpChange}
-                      placeholder="Enter OTP"
-                      className="w-full p-4 text-center text-2xl font-bold border-2 border-primary/20 rounded-lg bg-white focus:border-accent1 focus:ring-2 focus:ring-accent1/20 outline-none tracking-widest"
+                      placeholder="Enter 6-digit OTP"
+                      className="w-full p-4 text-center text-2xl font-bold border-2 border-primary/20 rounded-xl bg-white/50 focus:border-secondary focus:ring-2 focus:ring-secondary/20 outline-none tracking-widest"
                       maxLength={6}
                     />
                   </div>
 
-                  <div className="mt-4 flex justify-center gap-4">
+                  <div className="flex justify-center gap-4 text-sm">
                     <button
                       type="button"
                       onClick={handleResendOTP}
                       disabled={resendLoading || cooldown > 0}
-                      className="text-sm text-accent1 hover:text-accent2 disabled:opacity-50 flex items-center gap-1"
+                      className="text-secondary hover:text-accent1 disabled:opacity-50 flex items-center gap-1 transition-colors"
                     >
-                      {resendLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+                      {resendLoading && <Loader2 className="w-3 h-3 animate-spin" />}
                       {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend OTP"}
                     </button>
 
                     <button
                       type="button"
                       onClick={goBackToStep1}
-                      className="text-sm text-primary/60 hover:text-primary flex items-center gap-1"
+                      className="text-primary/60 hover:text-primary flex items-center gap-1 transition-colors"
                     >
                       <ArrowLeft className="w-3 h-3" />
                       Change Email
@@ -554,78 +536,72 @@ export default function SignUp() {
                   </div>
                 </div>
 
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    disabled={loading || otp.length !== 6}
-                    className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-lg shadow hover:scale-[1.01] transition transform disabled:opacity-60"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="animate-spin w-4 h-4" />
-                        <span className="text-sm">Verifying…</span>
-                      </>
-                    ) : (
-                      <>
-                        <Shield className="w-4 h-4" />
-                        <span className="text-sm">Verify & Submit for Review</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  disabled={loading || otp.length !== 6}
+                  className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.02] disabled:opacity-60 disabled:hover:scale-100 flex items-center justify-center gap-3"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="w-5 h-5" />
+                      Verify & Submit for Review
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </button>
               </form>
             )}
 
             {step === 3 && (
-              <div className="space-y-4">
-                <div className="border-l-4 border-blue-400 bg-blue-50 p-3 rounded-md">
-                  <div className="text-sm text-blue-800">
-                    Your request <span className="font-medium">has been submitted</span> and is now <span className="font-medium">under review</span> by your branch admin.
-                    {requestId ? (
-                      <> Your reference ID is <span className="font-mono">{requestId}</span>.</>
-                    ) : null}
+              <div className="space-y-6 text-center">
+                <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+                  <CheckCircle2 className="w-10 h-10 text-white" />
+                </div>
+
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-bold text-primary">Request Submitted!</h2>
+                  
+                  <div className="p-4 rounded-lg bg-blue-50 border border-blue-200 text-left">
+                    <div className="text-sm text-blue-800">
+                      Your request <span className="font-semibold">has been submitted</span> and is now{" "}
+                      <span className="font-semibold">under review</span> by your branch admin.
+                      {requestId && (
+                        <div className="mt-2">
+                          Reference ID: <span className="font-mono bg-blue-100 px-2 py-1 rounded">{requestId}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
+
+                  <p className="text-primary/60 text-sm">
+                    You'll receive an email once your request is accepted. After approval, you can log in using your email and password.
+                  </p>
                 </div>
 
-                <div className="text-sm text-primary/70">
-                  You'll receive an email once your request is accepted. After acceptance, you can log in using the email and password you set during signup.
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
                   <button
-                    type="button"
                     onClick={() => navigate("/")}
-                    className="px-4 py-2 rounded-lg border border-gray-200 bg-white hover:bg-gray-50"
+                    className="px-6 py-3 rounded-xl border border-primary/10 bg-white hover:bg-gray-50 transition-colors font-medium"
                   >
                     Go to Home
                   </button>
                   <button
-                    type="button"
                     onClick={() => navigate("/login")}
-                    className="px-4 py-2 rounded-lg bg-black text-white hover:brightness-95"
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-secondary to-accent1 text-white hover:shadow-lg transition-all duration-200 font-medium"
                   >
                     Go to Login
                   </button>
                 </div>
               </div>
             )}
-
-            {/* Login Link */}
-            {step !== 3 && (
-              <div className="text-center text-xs text-primary/60 mt-4">
-                Already have an account? {" "}
-                <button type="button" onClick={() => navigate("/login")} className="underline text-primary/80 font-medium">
-                  Log in
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
-
-      <style>{`
-        .input-group > div { display:flex; align-items:center; gap:0.5rem; }
-      `}</style>
     </div>
   );
 }

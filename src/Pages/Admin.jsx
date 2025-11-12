@@ -9,6 +9,7 @@ import { RightGD } from '../Component/Advanced/Admin/RightGD';
 import { RightTest } from '../Component/Advanced/Admin/RightTest';
 import { LeftDt } from '../Component/Advanced/Admin/LeftDt';
 import { RightDt } from '../Component/Advanced/Admin/RightDt';
+import AdminSignupRequests from './AdminRequest';
 
 // Read API base from common env names (Vite, CRA, Next)
 const API_BASE =
@@ -173,7 +174,7 @@ export default function Admin() {
                     : 'bg-white/60 backdrop-blur-sm border-2 border-primary text-primary hover:bg-white/80'
                 }`}
               >
-                Daily Task & Notification
+                Signup Requests
               </motion.button>
             </div>
 
@@ -223,13 +224,17 @@ export default function Admin() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 md:gap-6"
+                  className="gap-3 sm:gap-4 md:gap-6"
                 >
-                  <div className="min-h-[250px] sm:min-h-[300px] md:min-h-[400px]">
+                  {/* <div className="min-h-[250px] sm:min-h-[300px] md:min-h-[400px]">
                     <LeftDt />
                   </div>
                   <div className="min-h-[250px] sm:min-h-[300px] md:min-h-[400px]">
                     <RightDt />
+                  </div> */}
+
+                    <div className="min-h-[250px] sm:min-h-[300px] md:min-h-[400px]">
+                      <AdminSignupRequests/>
                   </div>
                 </motion.div>
               )}
