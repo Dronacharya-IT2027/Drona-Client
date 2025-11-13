@@ -46,14 +46,5 @@ const sendOTPEmail = async (email, otp, name) => {
   }
 };
 
-// Test the configuration
-transporter.verify(function(error, success) {
-  if (error) {
-    console.error('✗ Email configuration error:', error.message);
-  } else {
-    console.log('✓ Email transporter is ready');
-  }
-});
-
 // Make sure to export the function correctly
 module.exports = { sendOTPEmail };
