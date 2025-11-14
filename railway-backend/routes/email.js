@@ -25,19 +25,12 @@ transporter.verify((err, success) => {
   }
 });
 
-// Helper: generate 6-digit OTP
-function generateOTP() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
 // Route: POST /api/email/send-otp
 // body: { email: string, name?: string }
 router.post('/send-otp', async (req, res) => {
   try {
-    const { email, name } = req.body;
+    const { email, name, otp } = req.body;
     if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
-
-    const otp = generateOTP();
 
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
