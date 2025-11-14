@@ -320,7 +320,7 @@ export default function SignUp() {
                         name="name"
                         value={form.name}
                         onChange={handleChange}
-                        placeholder="Manas Singh"
+                        placeholder="Adarsh Kumar"
                         className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
                       />
                     </div>
@@ -334,7 +334,7 @@ export default function SignUp() {
                         name="enrollmentNumber"
                         value={form.enrollmentNumber}
                         onChange={handleChange}
-                        placeholder="CS25EN001"
+                        placeholder="08315603123"
                         className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
                       />
                     </div>
@@ -378,17 +378,36 @@ export default function SignUp() {
                   </div>
 
                   <div className="space-y-2 md:col-span-2">
-                    <label className="text-sm font-medium text-primary/80">Section</label>
-                    <div className="relative">
-                      <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
-                      <input
-                        name="branch"
-                        value={form.branch}
-                        onChange={handleChange}
-                        placeholder="Computer Science & Engineering"
-                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
-                      />
-                    </div>
+                  <label className="text-sm font-medium text-primary/80">Section</label>
+<div className="relative">
+  <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+
+  <select
+    name="branch"
+    value={form.branch}
+    onChange={handleChange}
+    className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 text-primary
+               focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none appearance-none"
+  >
+    <option value="">Select Section</option>
+    <option value="T6">T6</option>
+    <option value="T7">T7</option>
+    <option value="T18">T18</option>
+    <option value="T5">T5</option>
+  </select>
+
+  {/* Dropdown arrow */}
+  <svg
+    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/40 pointer-events-none"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+  </svg>
+</div>
+
                   </div>
 
                   <div className="space-y-2">
@@ -400,6 +419,7 @@ export default function SignUp() {
                         value={form.linkedin}
                         onChange={handleChange}
                         placeholder="linkedin.com/in/username"
+                        required
                         className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
                       />
                     </div>
@@ -414,6 +434,7 @@ export default function SignUp() {
                         value={form.github}
                         onChange={handleChange}
                         placeholder="github.com/username"
+                        required
                         className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
                       />
                     </div>
@@ -428,7 +449,8 @@ export default function SignUp() {
                         name="leetcode"
                         value={form.leetcode}
                         onChange={handleChange}
-                        placeholder="leetcode.com/username (optional)"
+                        placeholder="leetcode.com/username "
+                        required
                         className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
                       />
                     </div>

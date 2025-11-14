@@ -1,10 +1,42 @@
+import axios from "axios";
+import { useState, useEffect } from "react";
+const API_BASE =
+  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_BASE_URL) ||
+  process.env.REACT_APP_API_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "";
+
+ 
 export default function CertifiedTeachersBadge() {
+ 
+
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+ 
+
+  useEffect(() => {
+    async function fetchTotalUsers() {
+      try {
+        const res = await axios.get(`${API_BASE}/api/users/totaluser`); 
+        setTotalUsers(res.data.totalUsers);
+      } catch (err) {
+        console.error("Failed to fetch total users:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTotalUsers();
+  }, []);
+
+  console.log("user" + totalUsers);
   return (
     <div
       className="
         absolute 
         top-20 right-4
-        sm:top-24 sm:right-6 
+        sm:top-24 sm:right-6  
         md:top-28 md:right-8 
         lg:top-20 lg:right-12 
         rounded-3xl 

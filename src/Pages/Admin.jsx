@@ -79,7 +79,7 @@ export default function Admin() {
       <div className="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-xl border border-primary/10 max-w-lg text-center">
         <h3 className="text-xl font-bold text-red-600 mb-2">Access Denied</h3>
         <p className="text-sm text-primary/80 mb-4">
-          Sorry — you are not allowed to access this screen.
+          Sorry you are not allowed to access this screen.
         </p>
         {message && <p className="text-xs text-gray-500 mb-4">{message}</p>}
         <div className="flex justify-center gap-3">
@@ -152,7 +152,7 @@ export default function Admin() {
               >
                 Test
               </motion.button>
-              <motion.button
+              {/* <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setActiveTab('gd')}
@@ -163,7 +163,7 @@ export default function Admin() {
                 }`}
               >
                 GD & Interview
-              </motion.button>
+              </motion.button> */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}

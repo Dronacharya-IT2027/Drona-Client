@@ -164,4 +164,23 @@ router.get('/me/tests', auth, async (req, res) => {
   }
 });
 
+router.get('/totaluser', async (req, res) => {
+  try {
+    const count = await User.countDocuments(); // counts all users
+     
+    res.json({
+      success: true,
+      totalUsers: count
+    });
+  } catch (err) {
+    console.error('GET /api/users/totaluser error:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: err.message
+    });
+  }
+});
+
+
 module.exports = router;

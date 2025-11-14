@@ -1,48 +1,73 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { BellIcon, EyeIcon } from "@heroicons/react/24/outline";
+import axios from 'axios';
+
+const API_BASE =
+  (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_BASE_URL) ||
+  process.env.REACT_APP_API_BASE_URL ||
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  '';
 
 const Features = () => {
-  // State to control visib
-  // ility of last 2 cards
+   
+  const [showAdvancedFeatures, setShowAdvancedFeatures] = useState(false); // <-- new state
+
   const navigate = useNavigate();
-  const [showAdvancedFeatures, setShowAdvancedFeatures] = useState(false);
+
+  useEffect(() => {
+    // Admin verification logic on mount
+    const checkAdmin = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+         setShowAdvancedFeatures(false);
+          return;
+        }
+
+        const res = await axios.get(`${API_BASE}/api/auth/admin/tests`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (res.data && res.data.success) {
+         setShowAdvancedFeatures(true);
+        } else {
+         setShowAdvancedFeatures(false);
+        }
+      } catch (err) {
+       setShowAdvancedFeatures(false);
+      }
+    };
+
+    checkAdmin();
+  }, []);
 
   const features = [
     {
       id: 1,
-      title: "Smart Analytics",
-      description: "Gain deep insights with AI-powered real-time analytics.",
+      title: "Aptitude & Mock Tests",
+      description: "Practice topic-wise and full-length tests to boost your placement readiness.",
       borderColor: "border-accent1",
       notifications: 3,
       visible: true,
-      route: "/aptitude-test" // Add route for each feature
+      route: "/aptitude-test"
     },
     {
       id: 2,
-      title: "GD and Interview",
-      description: "Effortlessly connect to your favorite platforms and tools.",
+      title: "GD & Interview Prep",
+      description: "Join GD rooms and prepare with mock interview questions and real-world scenarios.",
       borderColor: "border-accent2",
-      notifications: 7,
+      notifications: 0,
       visible: true,
       route: "/GD-and-Interview"
     },
     {
       id: 3,
-      title: "Enhanced Security",
-      description: "Your data is protected with advanced encryption and access control.",
-      borderColor: "border-secondary",
-      notifications: 2,
-      visible: true,
-      route: "/security"
-    },
-    {
-      id: 4,
-      title: "Advanced Reporting",
-      description: "Generate comprehensive reports with customizable metrics and filters.",
+      title: "Coordinator Panel",
+      description: "Manage tests, track student progress, and monitor all placement activities.",
       borderColor: "border-accent1",
       notifications: 12,
-      visible: showAdvancedFeatures,
+      visible: showAdvancedFeatures, // <-- only show if admin & advanced features ON
       route: "/admin"
     }
   ];
@@ -52,14 +77,14 @@ const Features = () => {
   };
 
   return (
-    <div className="w-full mt-8 min-h-screen bg-background">
+    <div className="w-full mt-8 min-h-screen  ">
       {/* Header positioned after navbar */}
       <div className="  ">
         <h2 className="text-4xl font-bold text-primary text-center mb-2">
-          Our Exciting Features
+          Your Career Readiness Dashboard
         </h2>
         <p className="text-secondary text-center text-lg mb-8">
-          Discover powerful tools designed to enhance your experience
+         Explore essential modules for test, GD, and interview preparation
         </p>
       </div>
 
@@ -111,13 +136,19 @@ const Features = () => {
                 </div>
                 
                 {/* View Button with Navigation */}
-                <button 
-                  onClick={() => handleViewClick(feature.route)}
-                  className="flex items-center space-x-1 bg-primary hover:bg-secondary text-white px-3 py-1.5 rounded-lg transition-all duration-200 hover:shadow-md text-sm font-medium"
-                >
-                  <EyeIcon className="h-4 w-4" />
-                  <span>View</span>
-                </button>
+               <button 
+ onClick={() => feature.id !== 2 && handleViewClick(feature.route)}
+ disabled={feature.id === 2}
+ className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 
+    ${feature.id === 2 
+      ? "bg-gray-400 cursor-not-allowed text-gray-200" 
+      : "bg-primary hover:bg-secondary text-white hover:shadow-md"
+    }`}
+>
+ <EyeIcon className="h-4 w-4" />
+ <span>View</span>
+</button>
+
               </div>
             </div>
             
@@ -125,7 +156,7 @@ const Features = () => {
             <div className="w-full bg-gray-200 rounded-full h-1.5 mt-4">
               <div 
                 className={`h-1.5 rounded-full bg-gradient-to-r from-primary to-secondary transition-all duration-1000 ${feature.borderColor.replace('border-', 'from-')}`}
-                style={{ width: `${Math.min(feature.notifications * 10, 100)}%` }}
+                style={{ width: `100%` }}
               ></div>
             </div>
           </div>
@@ -133,14 +164,14 @@ const Features = () => {
     </div>
         
         {/* Toggle Button for Advanced Features */}
-        <div className="flex justify-center mt-8">
+        {/* <div className="flex justify-center mt-8">
           <button
             onClick={() => setShowAdvancedFeatures(!showAdvancedFeatures)}
             className="bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             {showAdvancedFeatures ? 'Hide Advanced Features' : 'Show Advanced Features'}
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

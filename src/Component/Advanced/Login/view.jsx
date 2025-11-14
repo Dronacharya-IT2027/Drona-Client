@@ -108,7 +108,7 @@ const Login = () => {
 
             <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Welcome back</h2>
             <p className="text-sm text-primary/70 text-center px-6">
-              Login to continue to Learnify — take tests, track your progress, and access campus activities.
+              Login to continue to Dronaa !! take tests, track your progress, and access campus activities.
             </p>
           </div>
 

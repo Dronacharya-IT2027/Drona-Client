@@ -57,7 +57,7 @@ function App() {
                 {/* admin */}
 
                 <Route path= "/admin" element = {<ProtectedRoute><Admin/></ProtectedRoute>}/>
-                  <Route path= "/admin-super" element = {<SuperAdminDashboard/>}/>
+                <Route path= "/admin-super" element = {<SuperAdminDashboard/>}/>
 
                 <Route
                   path="*"

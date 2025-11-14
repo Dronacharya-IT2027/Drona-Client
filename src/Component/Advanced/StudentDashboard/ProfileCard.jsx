@@ -4,6 +4,8 @@ import { FaGithub } from "react-icons/fa";
 import { SiLeetcode } from "react-icons/si";
 import { MdSchool } from "react-icons/md";
 import { ChevronDown, X, ExternalLink } from "lucide-react";
+import { useUserAvatar } from "../../../Service/useUserAvatar";
+import { Clock } from "lucide-react"; // or any icon you prefer
 import axios from "axios";
 
 const API_BASE =
@@ -18,11 +20,13 @@ function getStoredUser() {
     const raw = localStorage.getItem("user");
     if (!raw) return null;
     return JSON.parse(raw);
+    
   } catch (e) {
     console.warn("Failed to parse stored user:", e);
     return null;
   }
 }
+ 
 
 function buildGithubUrl(github) {
   if (!github) return null;
@@ -63,15 +67,17 @@ const ProfileCard = () => {
     linkedin: storedUser?.linkedin || "",
     branch: storedUser?.branch || ""
   };
-
+   
+ 
   const githubUrl = buildGithubUrl(user.github);
   const leetcodeUrl = buildLeetcodeUrl(user.leetcode);
   const linkedinUrl = buildLinkedinUrl(user.linkedin);
   const openIf = (url) => { if (url) window.open(url, "_blank", "noopener,noreferrer"); };
-
+  const avatar = useUserAvatar(user);
   // Fetch rankings from backend API
   useEffect(() => {
     const fetchRankings = async () => {
+       
       if (!user.branch) return;
       try {
         const res = await axios.get(`${API_BASE}/api/users/rankings/all`);
@@ -106,8 +112,8 @@ const ProfileCard = () => {
       <div className="flex flex-col items-center justify-center p-4 space-y-2 flex-none relative">
         <div className="relative">
           <img
-            src="https://t4.ftcdn.net/jpg/04/31/64/75/240_F_431647519_usrbQ8Z983hTYe8zgA7t1XVc5fEtqcpa.jpg"
-            alt="Profile"
+            src={avatar}
+            alt="User Avatar"
             className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-2 border-accent1"
           />
         </div>
@@ -152,7 +158,7 @@ const ProfileCard = () => {
 
           <div className="flex flex-col items-center">
             <MdSchool className="text-xl md:text-2xl text-secondary" />
-            <p className="text-xs md:text-sm font-medium mt-1 text-accent1">24</p>
+            <p className="text-xs md:text-sm font-medium mt-1 text-accent1">{storedUser.totalMarks||0}</p>
           </div>
         </div>
       </div>
@@ -203,9 +209,28 @@ const ProfileCard = () => {
             })}
           </div>
         </div>
+ 
+
+{/* Daily Tasks */}
+<div className="bg-white rounded-lg shadow p-3 md:p-4">
+  <div className="flex items-center justify-between mb-3">
+    <h2 className="text-base md:text-lg font-bold text-primary">Daily Tasks</h2>
+    <ChevronDown className="w-4 h-4 md:w-5 md:h-5 text-secondary animate-bounce" />
+  </div>
+
+  {/* Centered Coming Soon Section */}
+  <div className="h-36 md:h-48 flex flex-col items-center justify-center text-center">
+
+    <Clock className="w-10 h-10 text-secondary opacity-70 mb-2" />
+
+    <p className="text-gray-400 font-semibold text-sm md:text-base">
+      Coming Soon
+    </p>
+  </div>
+</div>
 
         {/* Daily Tasks */}
-        <div className="bg-white rounded-lg shadow p-3 md:p-4">
+        {/* <div className="bg-white rounded-lg shadow p-3 md:p-4">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-base md:text-lg font-bold text-primary">Daily Tasks</h2>
             <ChevronDown className="w-4 h-4 md:w-5 md:h-5 text-secondary animate-bounce" />
@@ -229,7 +254,7 @@ const ProfileCard = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Rankings Modal */}
