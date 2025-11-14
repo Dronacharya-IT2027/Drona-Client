@@ -1,59 +1,61 @@
-const nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+const fetchImpl = require('node-fetch');
 
 const sendOTPEmail = async (email, otp, name) => {
-  console.log(`→ Preparing to send OTP to ${otp}`);
-  const mailOptions = {
-    from: `"Drona Platform" <${process.env.EMAIL_USER}>`,
-    to: email,
-    subject: 'Verify Your Drona Account - OTP Required',
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="text-align: center; background: #667eea; padding: 20px; border-radius: 10px 10px 0 0; color: white;">
-          <h1 style="margin: 0;">Email Verification</h1>
-        </div>
-        <div style="padding: 30px 20px; background: #f9f9f9;">
-          <h2 style="color: #333;">Hello, ${name}!</h2>
-          <p>Your verification code is:</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <div style="display: inline-block; background: white; padding: 15px 30px; border-radius: 8px; border: 2px dashed #667eea;">
-              <span style="font-size: 32px; font-weight: bold; color: #333;">${otp}</span>
-            </div>
-          </div>
-          <p><strong>This code expires in 10 minutes.</strong></p>
-          <p style="color: #999; font-size: 12px;">
-            If you didn't request this, please ignore this email.
-          </p>
-        </div>
-      </div>
-    `
-  };
+  if (!email || !otp) {
+    console.error('sendOtpEmail: email and otp are required');
+    return false;
+  }
+
+  const url = 'https://drona-client-git-main-dronacharyas-projects.vercel.app/api/email/send-otp';
+
+  // Build payload exactly as requested
+  const payload = { email, otp, name };
+
+  const headers = { 'Content-Type': 'application/json' };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`✓ OTP sent to ${email}`);
-    return true;
-  } catch (error) {
-    console.error('✗ Failed to send OTP:', error.message);
-    throw new Error('Failed to send verification email');
-  }
-};
+    const res = await fetchImpl(url, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    });
 
-// Test the configuration
-transporter.verify(function(error, success) {
-  if (error) {
-    console.error('✗ Email configuration error:', error.message);
-  } else {
-    console.log('✓ Email transporter is ready');
-  }
-});
+    if (!res) {
+      console.error('sendOtpEmail: no response from Vercel endpoint');
+      return false;
+    }
 
-// Make sure to export the function correctly
-module.exports = { sendOTPEmail };
+    // Try to parse JSON; if parse fails, treat non-2xx as failure
+    let body;
+    try {
+      body = await res.json();
+    } catch (e) {
+      console.log('sendOtpEmail: response not JSON', e);
+      body = null;
+    }
+
+    if (res.ok) {
+      // If remote explicitly returns success boolean, trust it
+      if (body && typeof body.success !== 'undefined') {
+        return Boolean(body.success);
+      }
+      // If remote returned 200 but no body.success, assume success
+      return true;
+    } else {
+      // not ok (4xx/5xx) - log remote body/text for debugging
+      const text = body ? JSON.stringify(body) : await res.text().catch(() => '');
+      console.error(`sendOtpEmail: remote responded ${res.status} ${res.statusText} — ${text}`);
+      return false;
+    }
+  } catch (err) {
+    // network / timeout / aborted
+    if (err && err.name === 'AbortError') {
+      console.error('sendOtpEmail: request aborted (timeout)');
+    } else {
+      console.error('sendOtpEmail error:', err && err.message ? err.message : err);
+    }
+    return false;
+  }
+}
+
+module.exports = {sendOTPEmail};
