@@ -1,10 +1,12 @@
+// src/App.jsx
 import React, { Suspense, useContext } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+import DisableInspect from "./API/Security/DisableInspect"; // adjust path if needed
+
+// auth
 import AuthProvider from "./auth/AuthProvider";
 import ProtectedRoute from "./auth/ProtectedRoute";
-import DisableInspect from "../src/API/Security/DisableInspect";
-//componnets
 import AuthContext from "./auth/authContext";
 
 // Components
@@ -21,78 +23,27 @@ import Contact from "./Pages/Contact";
 import StudentDashboard from "./Pages/StudentDashbord";
 import GDandInterviewpage from "./Pages/GDandInterviewpage";
 import SecureTestApp from "./Pages/SecureTestApp";
+import BlogPage from "./Pages/BlogPage";
+import NotFound from "./Pages/NotFound";
 import SignUp from "./Component/Advanced/SignUp/view";
 import Login from "./Component/Advanced/Login/view";
 
-// admin
-import SignUp from './Component/Advanced/SignUp/view';
-import Login from './Component/Advanced/Login/view';
-import BlogPage from "./Pages/BlogPage";
-import NotFound from "./Pages/NotFound";
-//admin
-
+// admin / superadmin
 import Admin from "./Pages/Admin";
-
-// superadmin
 import SuperAdminDashboard from "./Pages/SuperAdmin";
 import AdminSignupRequests from "./Pages/AdminRequest";
 import SuperAdminSignupRequests from "./Pages/SuperAdminReq";
 
 function AppRoutes() {
+  // role should be provided by your AuthProvider (e.g. "normal" | "admin" | "super-admin")
   const { role } = useContext(AuthContext);
-function App() {
-
-  const SUPER_ADMIN_EMAIL = import.meta.env.VITE_SUPER_ADMIN_EMAIL;
-
-  // Read the JSON string safely
-  const storedUserJson = localStorage.getItem('user');
-  let storedEmail = '';
-
-  if (storedUserJson) {
-    try {
-      const storedUser = JSON.parse(storedUserJson);  // <-- proper parsing
-      storedEmail = (storedUser.email || '').trim().toLowerCase();
-    } catch (e) {
-      console.error("Invalid user JSON:", e);
-    }
-  }
-
-  const isSuperAdminUser = storedEmail === SUPER_ADMIN_EMAIL.toLowerCase();
-  const FakeDelay = ({ children }) => {
-  const [ready, setReady] = React.useState(false);
-
-  React.useEffect(() => {
-    setTimeout(() => setReady(true), 1000); // 3 sec delay
-  }, []);
-
-  return ready ? children : <Loader />;
-};
-
 
   return (
-      <DisableInspect> 
-    <Router>
-      <ErrorBoundary>
-        <AuthProvider>
-          <Navbar />
-          <Suspense fallback={<Loader />}>
-            
-            <main className="min-h-[80vh]">
-              <Routes>
-                {!isSuperAdminUser ? (
-              <>
-                <Route path="/" element={<Home />} />
-                 <Route path="/blog" element={<BlogPage />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/aptitude-test" element={<ProtectedRoute><Aptitest /></ProtectedRoute>} />
-                <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
-                <Route path="/dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
-                <Route path= "/GD-and-Interview" element = {<GDandInterviewpage/>}/>
-                <Route path= "/test" element = {<ProtectedRoute><SecureTestApp/></ProtectedRoute>}/>
     <Routes>
       {role !== "super-admin" ? (
         <>
           <Route path="/" element={<Home />} />
+          <Route path="/blog" element={<BlogPage />} />
           <Route path="/about" element={<About />} />
           <Route path="/aptitude-test" element={<ProtectedRoute><Aptitest /></ProtectedRoute>} />
           <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
@@ -105,14 +56,7 @@ function App() {
 
           <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
 
-          <Route
-            path="*"
-            element={
-              <div className="flex flex-col items-center justify-center h-screen">
-                <h1 className="text-3xl font-bold text-red-500">404 - Page Not Found</h1>
-              </div>
-            }
-          />
+          <Route path="*" element={<NotFound />} />
         </>
       ) : (
         <>
@@ -120,9 +64,11 @@ function App() {
           <Route path="/admin-requests" element={<AdminSignupRequests />} />
           <Route path="/superadmin-requests" element={<SuperAdminSignupRequests />} />
 
-          {/* allow auth pages still */}
+          {/* allow auth pages still for super-admin */}
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
+
+          <Route path="*" element={<NotFound />} />
         </>
       )}
     </Routes>
@@ -131,35 +77,20 @@ function App() {
 
 function App() {
   return (
-    <Router>
-      <ErrorBoundary>
-        <AuthProvider>
-          <Navbar />
-          <Suspense fallback={<Loader />}>
-            <main className="min-h-[80vh]">
-              <AppRoutes />
-                <Route
-                  path="*"
-                  element={
-                    <NotFound/>
-                  }
-                />
-              </>
-                ):(
-                  <>
-                  <Route path="/" element={<SuperAdminDashboard/>} />
-                  <Route path="/signup" element={<SignUp />} />
-                  <Route path="/login" element={<Login/>} />
-                  </>
-                )}
-              </Routes>
-            </main>
-        
-          </Suspense>
-          <Footer />
-        </AuthProvider>
-      </ErrorBoundary>
-    </Router>
+    <DisableInspect>
+      <Router>
+        <ErrorBoundary>
+          <AuthProvider>
+            <Navbar />
+            <Suspense fallback={<Loader />}>
+              <main className="min-h-[80vh]">
+                <AppRoutes />
+              </main>
+            </Suspense>
+            <Footer />
+          </AuthProvider>
+        </ErrorBoundary>
+      </Router>
     </DisableInspect>
   );
 }

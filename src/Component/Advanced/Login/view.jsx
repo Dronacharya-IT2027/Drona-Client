@@ -2,7 +2,7 @@
 import React, { useState, useContext } from "react";
 import { Mail, Lock, UserPlus, Loader2, Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import AuthContext from "../../../auth/authContext"; // <-- adjust path if needed
+import AuthContext from "../../../auth/authContext"; // adjust path if needed
 
 /* Robust env lookup (Vite / CRA / Next) */
 const API_BASE =
@@ -61,31 +61,57 @@ const Login = () => {
         return;
       }
 
-      // store token
+      // store token and user
       if (data.token) {
         try {
           localStorage.setItem("token", data.token);
-          localStorage.removeItem("user"); 
-          localStorage.setItem("user", JSON.stringify(data.user));
         } catch (err) {
           console.warn("Unable to save token to localStorage", err);
         }
       }
 
-      // IMPORTANT: update global auth context by calling verify()
-      // verify() returns the user (or null). Wait for it before navigating.
+      // prefer server-provided user object (data.user). Fallback to existing saved user.
       try {
-        const verifiedUser = await verify(); // AuthProvider.verify()
-        if (verifiedUser) {
-          // success: navigate to home or dashboard
-          navigate("/");
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
         } else {
-          // token didn't verify for some reason
-          setError({ title: "Verification failed", message: "Could not validate session after login." });
+          // If server didn't return full user, make minimal user from form
+          const minimal = { email: form.email.trim().toLowerCase() };
+          localStorage.setItem("user", JSON.stringify(minimal));
         }
+      } catch (err) {
+        console.warn("Unable to save user to localStorage", err);
+      }
+
+      // Update global auth state. We wait for verify() to complete but do not rely on context role timing.
+      try {
+        await verify(); // AuthProvider.verify() should update context
       } catch (verifyErr) {
-        console.error("Post-login verify error:", verifyErr);
-        setError({ title: "Verification error", message: "Unable to verify login. Try again." });
+        console.warn("verify() failed after login:", verifyErr);
+        // proceed anyway — navigation below will use saved user info
+      }
+
+      // Decide navigation using the saved user email (stable and immediate)
+      try {
+        const saved = JSON.parse(localStorage.getItem("user") || "{}");
+        const email = (saved?.email || "").toString().trim().toLowerCase();
+        const SUPER_ADMIN_EMAIL = (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_SUPER_ADMIN_EMAIL)
+          ? import.meta.env.VITE_SUPER_ADMIN_EMAIL.toLowerCase()
+          : (process.env.REACT_APP_SUPER_ADMIN_EMAIL || process.env.NEXT_PUBLIC_SUPER_ADMIN_EMAIL || "").toLowerCase();
+
+        const isSuper = email && SUPER_ADMIN_EMAIL && email === SUPER_ADMIN_EMAIL;
+
+        // Navigate: super-admin → app root (AppRoutes should render SuperAdminDashboard for super-admin role),
+        // normal user → dashboard (or whatever route you want)
+        if (isSuper) {
+          navigate("/"); // root will show SuperAdminDashboard because AuthProvider sets role
+        } else {
+          navigate("/dashboard");
+        }
+      } catch (navErr) {
+        console.error("Navigation decision error:", navErr);
+        // fallback
+        navigate("/");
       } finally {
         setLoading(false);
       }
