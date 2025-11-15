@@ -12,23 +12,30 @@ router.get('/rankings/branch/:branch', async (req, res) => {
     const limit = Math.max(0, parseInt(req.query.limit || '0', 10));
     const skip = Math.max(0, parseInt(req.query.skip || '0', 10));
 
-    // match branch case-insensitive
-    const matchStage = { $match: { branch: { $regex: `^${branch}$`, $options: 'i' } } };
+    const excludedId = "6917dc4dfa0326a21fb2584c";
+    const excludedEmail = "tnpheadit@dronaa.com";
 
     const pipeline = [
-      matchStage,
-      // compute dense rank based only on totalMarks (must be single-field sortBy)
+      // Exclude specific user
       {
-        $setWindowFields: {
-          sortBy: { totalMarks: -1 }, // <-- single element required for denseRank
-          output: {
-            rank: { $denseRank: {} } // dense rank using totalMarks ordering
-          }
+        $match: {
+          _id: { $ne: new mongoose.Types.ObjectId(excludedId) },
+          email: { $ne: excludedEmail }
         }
       },
-      // Now sort final output by totalMarks desc, then name asc (so same-mark users are ordered by name)
+      // Match branch case-insensitive
+      {
+        $match: {
+          branch: { $regex: `^${branch}$`, $options: 'i' }
+        }
+      },
+      {
+        $setWindowFields: {
+          sortBy: { totalMarks: -1 },
+          output: { rank: { $denseRank: {} } }
+        }
+      },
       { $sort: { totalMarks: -1, name: 1 } },
-      // Remove sensitive/internal fields
       {
         $project: {
           passwordHash: 0,
@@ -42,7 +49,11 @@ router.get('/rankings/branch/:branch', async (req, res) => {
 
     const results = await User.aggregate(pipeline).exec();
 
-    const count = await User.countDocuments({ branch: { $regex: `^${branch}$`, $options: 'i' } });
+    const count = await User.countDocuments({
+      branch: { $regex: `^${branch}$`, $options: 'i' },
+      _id: { $ne: excludedId },
+      email: { $ne: excludedEmail }
+    });
 
     return res.json({ branch, count, results });
   } catch (err) {
@@ -59,23 +70,30 @@ router.get('/rankings/branch/:branch', async (req, res) => {
   }
 });
 
+
 // Complete IT not branch wise rankings
 router.get("/rankings/all", async (req, res) => {
   try {
+    const excludedId = "6917dc4dfa0326a21fb2584c";
+    const excludedEmail = "tnpheadit@dronaa.com";
+
     const rankings = await User.aggregate([
-      // First, rank by totalMarks descending
+      // Exclude specific user
+      {
+        $match: {
+          _id: { $ne: new mongoose.Types.ObjectId(excludedId) },
+          email: { $ne: excludedEmail }
+        }
+      },
       {
         $setWindowFields: {
-          sortBy: { totalMarks: -1 }, // only one field here
+          sortBy: { totalMarks: -1 },
           output: {
             rank: { $denseRank: {} },
           },
         },
       },
-      // Then sort by rank ascending and name ascending for tie-breaker
-      {
-        $sort: { rank: 1, name: 1 },
-      },
+      { $sort: { rank: 1, name: 1 } },
       {
         $project: {
           _id: 1,
@@ -94,6 +112,7 @@ router.get("/rankings/all", async (req, res) => {
     res.status(500).json({ success: false, message: "Server error", error: err.message });
   }
 });
+
 
 router.get('/me/tests', auth, async (req, res) => {
   try {

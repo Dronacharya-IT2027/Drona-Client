@@ -463,7 +463,8 @@ router.post('/:testId/submit', auth, async (req, res) => {
 
     // Grade submission
     let score = 0;
-    const perCorrectMarks = 2;
+    const totalQuestions = (Array.isArray(qArr) && qArr.length) ? qArr.length : (Array.isArray(answers) ? answers.length : 0);
+    const perCorrectMarks = totalQuestions > 0 ? 100 / totalQuestions : 0;
 
     // We'll also build feedback array (optional) to return per-question correctness (without exposing correctAnswer)
     const feedback = []; // { questionId, matched: true/false, correct: true/false }
