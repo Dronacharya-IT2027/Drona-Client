@@ -128,9 +128,15 @@ const Login = () => {
         <div className="flex flex-col lg:flex-row">
           {/* Left visual area */}
           <div className="w-full lg:w-1/2 p-8 sm:p-10 bg-gradient-to-b from-secondary/5 to-accent1/5 flex flex-col items-center justify-center">
-            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-xl bg-gradient-to-tr from-secondary to-accent1 flex items-center justify-center shadow-lg mb-4">
-              <UserPlus className="w-12 h-12 text-white" />
-            </div>
+    <div className="w-48 h-48 flex items-center justify-center mb-4 overflow-hidden">
+  <img
+    src="/Logo drona.png"
+    alt="User"
+    className="w-full h-full object-cover"
+  />
+</div>
+
+
 
             <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Welcome back</h2>
             <p className="text-sm text-primary/70 text-center px-6">

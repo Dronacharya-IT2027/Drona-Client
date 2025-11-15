@@ -13,95 +13,180 @@ const Footer = () => {
     setActiveModal(null);
   };
 
-  const modalContent = {
-    faq: {
-      title: 'Frequently Asked Questions',
-      content: (
-        <div className="space-y-6">
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">What is Dronaa?</h3>
-            <p className="text-gray-600">Dronaa is a platform offering free, high-quality courses designed to help you achieve your dream career through comprehensive learning paths.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">How do I get started?</h3>
-            <p className="text-gray-600">Simply browse our course catalog, select a course that interests you, and start learning immediately. No payment required!</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Are the courses really free?</h3>
-            <p className="text-gray-600">Yes! All our courses are completely free. We believe in accessible education for everyone.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Do I get a certificate?</h3>
-            <p className="text-gray-600">Upon completing a course, you'll receive a certificate of completion to showcase your new skills.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Can I access courses on mobile?</h3>
-            <p className="text-gray-600">Absolutely! Our platform is fully responsive and works seamlessly on all devices.</p>
-          </div>
+const modalContent = {
+  faq: {
+    title: "Frequently Asked Questions",
+    content: (
+      <div className="space-y-6">
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            What is this platform for?
+          </h3>
+          <p className="text-gray-600">
+            This platform manages student participation in tests, group discussions (GDs), and interview preparation activities.
+          </p>
         </div>
-      )
-    },
-    privacy: {
-      title: 'Privacy Policy',
-      content: (
-        <div className="space-y-4 text-gray-600">
-          <p className="text-sm text-gray-500">Last updated: {new Date().toLocaleDateString()}</p>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Information We Collect</h3>
-            <p>We collect information you provide directly to us, including your name, email address, and learning preferences to enhance your educational experience on Dronaa.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">How We Use Your Information</h3>
-            <p>Your information helps us personalize your learning journey, track your progress, recommend relevant courses, and communicate important updates about our platform.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Data Security</h3>
-            <p>We implement industry-standard security measures to protect your personal information from unauthorized access, disclosure, alteration, and destruction.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Cookies and Tracking</h3>
-            <p>We use cookies to improve your browsing experience, analyze site traffic, and remember your preferences. You can manage cookie settings in your browser.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Your Rights</h3>
-            <p>You have the right to access, update, or delete your personal information at any time. Contact our support team for assistance with your data rights.</p>
-          </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Who will manage my queries/issues?
+          </h3>
+          <p className="text-gray-600">
+            All student activities and any issues are handled by their respective class coordinators. Please contact your class coordinator for any help or concerns.
+          </p>
         </div>
-      )
-    },
-    terms: {
-      title: 'Terms of Service',
-      content: (
-        <div className="space-y-4 text-gray-600">
-          <p className="text-sm text-gray-500">Last updated: {new Date().toLocaleDateString()}</p>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Acceptance of Terms</h3>
-            <p>By accessing and using Dronaa's platform, you accept and agree to be bound by these terms and conditions. If you do not agree, please do not use our services.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Use of Service</h3>
-            <p>You agree to use our educational platform only for lawful purposes. You must not misuse our content, attempt unauthorized access, or interfere with other users' learning experience.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Course Content</h3>
-            <p>All course materials, videos, and resources are provided for personal educational use only. Redistribution or commercial use without permission is strictly prohibited.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Intellectual Property</h3>
-            <p>All content, features, and functionality on Dronaa are owned by us and protected by international copyright, trademark, and other intellectual property laws.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">User Accounts</h3>
-            <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-2">Limitation of Liability</h3>
-            <p>Dronaa shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of our educational platform.</p>
-          </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Will I get a certificate or prize?
+          </h3>
+          <p className="text-gray-600">
+            No certificates or prizes are given for participation or performance in these activities.
+          </p>
         </div>
-      )
-    }
-  };
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Are reports shared with anyone?
+          </h3>
+          <p className="text-gray-600">
+            Yes, a weekly report of student participation and progress is sent to the department Training & Placement (T&P) coordinator.
+          </p>
+        </div>
+      </div>
+    ),
+  },
+  privacy: {
+    title: "Privacy Policy",
+    content: (
+      <div className="space-y-4 text-gray-600">
+        <p className="text-sm text-gray-500">
+          Last updated: {new Date().toLocaleDateString()}
+        </p>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Information We Collect
+          </h3>
+          <p>
+            We collect your name, roll number, email, class details, and participation data to track your involvement in activities.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            How We Use Your Information
+          </h3>
+          <p>
+            Your data is used to manage participation, prepare progress reports, and update your coordinator and the department T&P team. It may also be used to improve the platform’s features and ensure fair usage.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Data Sharing
+          </h3>
+          <p>
+            Your personal information is only shared with your class coordinator and the department T&P coordinator. It is never sold, rented, or disclosed to any third party outside the institution, except as required by law.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Security
+          </h3>
+          <p>
+            We follow reasonable safeguards to protect your data, restrict access to authorized staff, and review our security regularly. However, no system can be 100% secure, so please report any concerns right away.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Data Retention
+          </h3>
+          <p>
+            We retain your information only as long as needed for academic tracking, compliance, or until you request its deletion. After that, your data is securely deleted.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Your Rights
+          </h3>
+          <p>
+            You may request to view, update, or delete your personal information by contacting your class coordinator or platform admin.
+          </p>
+        </div>
+      </div>
+    ),
+  },
+  terms: {
+    title: "Terms & Conditions",
+    content: (
+      <div className="space-y-4 text-gray-600">
+        <p className="text-sm text-gray-500">
+          Last updated: {new Date().toLocaleDateString()}
+        </p>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Scope and Purpose
+          </h3>
+          <p>
+            This platform is only for students' test, group discussion, and interview preparation activities as assigned by your institution.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Role of Coordinators
+          </h3>
+          <p>
+            Every student is assigned to a class coordinator, who handles all queries about the platform, participation, or technical support.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            No Certificates or Prizes
+          </h3>
+          <p>
+            No certificates, awards, or prizes will be provided for activities on this platform, and participation is not linked to any formal recognition or credits.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Weekly Reports
+          </h3>
+          <p>
+            Your participation may be logged, and summary reports are generated and shared weekly with the department T&P coordinator for official record keeping.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Code of Conduct
+          </h3>
+          <p>
+            All users must follow respectful conduct and academic integrity. Any attempt to misuse the platform, provide false data, or disrupt activities may result in removal from the platform.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Platform Access & Availability
+          </h3>
+          <p>
+            While we strive to keep the platform online at all times, access is not guaranteed. Scheduled maintenance or technical issues may lead to temporary interruptions without prior notice.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Changes to Policy
+          </h3>
+          <p>
+            Rules, eligibility, and platform features may change as directed by department authorities. Continued use means you accept these changes.
+          </p>
+        </div>
+        <div>
+          <h3 className="font-semibold text-lg text-primary mb-2">
+            Limitation of Liability
+          </h3>
+          <p>
+            The platform is provided "as is." The institution and coordinators shall not be responsible for any data loss or indirect damages resulting from use of the platform.
+          </p>
+        </div>
+      </div>
+    ),
+  },
+};
+
 
   return (
     <>
@@ -198,7 +283,7 @@ const Footer = () => {
                     href="/#jobs"
                     className="text-gray-400 hover:text-secondary transition-colors duration-300"
                   >
-                    jobs & openings
+                    Jobs & openings
                   </a>
                 </li>
                 <li>
@@ -237,7 +322,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <button
-                    onClick={() => openModal('faq')}
+                    onClick={() => openModal("faq")}
                     className="text-gray-400 hover:text-secondary transition-colors duration-300"
                   >
                     FAQs
@@ -245,7 +330,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <button
-                    onClick={() => openModal('privacy')}
+                    onClick={() => openModal("privacy")}
                     className="text-gray-400 hover:text-secondary transition-colors duration-300"
                   >
                     Privacy Policy
@@ -253,7 +338,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <button
-                    onClick={() => openModal('terms')}
+                    onClick={() => openModal("terms")}
                     className="text-gray-400 hover:text-secondary transition-colors duration-300"
                   >
                     Terms of Service
@@ -271,19 +356,19 @@ const Footer = () => {
               </p>
               <div className="flex gap-6 font-kodchasan text-sm">
                 <button
-                  onClick={() => openModal('privacy')}
+                  onClick={() => openModal("privacy")}
                   className="text-gray-400 hover:text-accent2 transition-colors duration-300"
                 >
                   Privacy
                 </button>
                 <button
-                  onClick={() => openModal('terms')}
+                  onClick={() => openModal("terms")}
                   className="text-gray-400 hover:text-accent2 transition-colors duration-300"
                 >
                   Terms
                 </button>
                 <a
-                  href="#"
+                  href="/"
                   className="text-gray-400 hover:text-accent2 transition-colors duration-300"
                 >
                   Cookies
@@ -296,50 +381,64 @@ const Footer = () => {
 
       {/* Modal */}
       {activeModal && (
-       <div 
-  className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      <div
+  className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4"
   onClick={closeModal}
+  style={{
+    backgroundColor: 'rgba(21, 19, 19, 0.4)',
+  }}
 >
   <div
-    className="relative bg-background/90 backdrop-blur-xl rounded-3xl shadow-xl max-w-xl w-full max-h-[85vh] overflow-y-auto border border-white/20 animate-fade-in"
+    className="relative rounded-3xl shadow-xl max-w-xl w-full max-h-[85vh] overflow-y-auto border animate-fade-in"
     onClick={(e) => e.stopPropagation()}
     style={{
-      background: "linear-gradient(135deg, rgba(247,247,245,0.95), rgba(255,255,255,0.95))",
-      boxShadow:
-        "0 10px 40px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.4)",
+      background: 'linear-gradient(135deg, rgba(247,247,245,0.98), rgba(255,255,255,0.98))',
+      boxShadow: '0 20px 60px rgba(21,19,19,0.2), inset 0 1px 0 rgba(255,255,255,0.5)',
+      borderColor: 'rgba(190,148,245,0.15)',
     }}
   >
     {/* HEADER */}
-    <div className="sticky top-0 bg-white/70 backdrop-blur-lg border-b border-gray-200 px-6 py-4 rounded-t-3xl flex items-center justify-between shadow-sm">
-      <h2 className="text-2xl font-bold text-primary font-kodchasan tracking-wide">
+    <div 
+      className="sticky top-0 backdrop-blur-lg border-b px-6 py-3.5 rounded-t-3xl flex items-center justify-between shadow-sm"
+      style={{
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        borderBottomColor: 'rgba(190,148,245,0.12)',
+      }}
+    >
+      <h2 className="text-lg font-bold text-primary font-kodchasan tracking-wide">
         {modalContent[activeModal].title}
       </h2>
 
       <button
         onClick={closeModal}
-        className="p-2 rounded-full hover:bg-gray-100 transition-all duration-300 text-primary hover:text-secondary"
+        className="p-1.5 rounded-full hover:bg-accent1/10 transition-all duration-300 text-primary hover:text-secondary"
       >
-        <X size={24} />
+        <X size={20} />
       </button>
     </div>
 
     {/* BODY */}
-    <div className="px-6 py-6 font-kodchasan text-primary leading-relaxed">
+    <div className="px-6 py-5 font-kodchasan text-primary text-sm leading-relaxed">
       {modalContent[activeModal].content}
     </div>
 
     {/* FOOTER */}
-    <div className="sticky bottom-0 bg-white/70 backdrop-blur-lg border-t border-gray-200 px-6 py-4 rounded-b-3xl shadow-sm flex justify-end">
+    <div 
+      className="sticky bottom-0 backdrop-blur-lg border-t px-6 py-3.5 rounded-b-3xl shadow-sm flex justify-end"
+      style={{
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        borderTopColor: 'rgba(190,148,245,0.12)',
+      }}
+    >
       <button
         onClick={closeModal}
-        className="px-6 py-2.5 rounded-xl font-semibold font-kodchasan bg-secondary text-white hover:bg-secondary/90 shadow-lg hover:shadow-secondary/30 transition-all duration-300"
+        className="px-5 py-2 rounded-xl font-semibold text-sm font-kodchasan bg-secondary text-white hover:bg-secondary/90 shadow-lg hover:shadow-secondary/30 transition-all duration-300"
       >
         Close
       </button>
     </div>
   </div>
 </div>
-
       )}
     </>
   );
