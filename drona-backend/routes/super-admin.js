@@ -61,12 +61,18 @@ router.get('/admins', auth, async (req, res) => {
     const total = await User.countDocuments(filter);
 
     // fetch page
-    const results = await User.find(filter)
+    let results = await User.find(filter)
       .select('_id name email branch role enrollmentNumber createdAt')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
+
+    results = results.filter(u =>
+      u._id.toString() !== "6917dc4dfa0326a21fb2584c" &&
+      u.email.toLowerCase() !== "tnpheadit@dronaa.com" &&
+      u.enrollmentNumber !== "0000"
+    );
 
     return res.json({
       success: true,

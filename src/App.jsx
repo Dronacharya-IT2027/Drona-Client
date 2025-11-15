@@ -59,8 +59,9 @@ function App() {
           <Navbar />
           <Suspense fallback={<Loader />}>
             <main className="min-h-[80vh]">
-                {!isSuperAdminUser ? (
               <Routes>
+                {!isSuperAdminUser ? (
+              <>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/aptitude-test" element={<ProtectedRoute><Aptitest /></ProtectedRoute>} />
@@ -86,11 +87,15 @@ function App() {
                     </div>
                   }
                 />
-              </Routes>
+              </>
                 ):(
-                  <SuperAdminDashboard />
+                  <>
+                  <Route path="/" element={<SuperAdminDashboard/>} />
+                  <Route path="/signup" element={<SignUp />} />
+                  <Route path="/login" element={<Login/>} />
+                  </>
                 )}
-              
+              </Routes>
             </main>
           </Suspense>
           <Footer />
