@@ -592,11 +592,6 @@ export default function SignUp() {
                     <div className="text-sm text-blue-800">
                       Your request <span className="font-semibold">has been submitted</span> and is now{" "}
                       <span className="font-semibold">under review</span> by your branch admin.
-                      {requestId && (
-                        <div className="mt-2">
-                          Reference ID: <span className="font-mono bg-blue-100 px-2 py-1 rounded">{requestId}</span>
-                        </div>
-                      )}
                     </div>
                   </div>
 
