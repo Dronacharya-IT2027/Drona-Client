@@ -5,6 +5,46 @@ import { RankList, WeakTopics } from "../Test/Ranklist";
 import { TestCard } from "../Test/Testcard";
 import axios from 'axios';
 
+
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+
+async function generateReceiptPDF({ title, testId, date, marks, username }) {
+  // Load template PDF
+  const existingPdfBytes = await fetch("/receipt_templates.pdf").then(res =>
+    res.arrayBuffer()
+  );
+
+  // Load PDF
+  const pdfDoc = await PDFDocument.load(existingPdfBytes);
+  const page = pdfDoc.getPages()[0];
+
+  // Choose a font
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+  page.drawText(`Name: ${username}`, {
+    x: 20,
+    y: 150,
+    size: 14,
+    font,
+    color: rgb(0, 0, 0),
+  });
+
+  page.drawText(`Test Title: ${title}`, { x: 20, y: 120, size: 12, font });
+  page.drawText(`Receipt ID: ${testId}`, { x: 20, y: 90, size: 12, font });
+  page.drawText(`Date: ${date}`, { x: 20, y: 60, size: 12, font });
+  page.drawText(`Marks: ${marks}`, { x: 20, y: 30, size: 12, font });
+
+  const pdfBytes = await pdfDoc.save();
+
+  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `receipt_${username}.pdf`;
+  link.click();
+}
+
+
+
 const API_BASE =
   (typeof import.meta !== "undefined" && metaImportCheck()) ||
   process.env.REACT_APP_API_BASE_URL ||
@@ -297,6 +337,7 @@ const AptitudeTestPage = () => {
   const currentUserId = localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))._id
     : null;
+    
 
   return (
     <div className="min-h-screen font-kodchasan pb-8">
@@ -369,6 +410,7 @@ const AptitudeTestPage = () => {
       </div>
     </div>
 
+
     {/* Receipt body */}
     <div className="grid grid-cols-2 gap-3 text-sm text-gray-700 mb-4">
       <div>
@@ -424,7 +466,7 @@ const AptitudeTestPage = () => {
       </button>
 
       {/* Small receipt download — builds a simple text receipt & triggers download */}
-      <button
+      {/* <button
         onClick={() => {
           // create simple receipt content
           const testObj = ut.test || ut.rawTest || {};
@@ -453,7 +495,28 @@ const AptitudeTestPage = () => {
         className="px-3 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50"
       >
         Download Receipt
-      </button>
+      </button> */}
+
+      <button
+  onClick={() => {
+    const testObj = ut.test || ut.rawTest || {};
+    const username = JSON.parse(localStorage.getItem("user") || "{}")?.name;
+
+    generateReceiptPDF({
+      title: testObj.title || ut.title,
+      testId: testObj._id || ut.id,
+      date: testObj.startDate
+        ? new Date(testObj.startDate).toLocaleDateString("en-GB")
+        : ut.date,
+      marks: ut.marks ?? "—",
+      username,
+    });
+  }}
+  className="px-3 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50"
+>
+  Download Receipt
+</button>
+
     </div>
   </div>
 ))

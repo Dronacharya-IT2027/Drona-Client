@@ -10,7 +10,7 @@ const TestimonialSection = () => {
     role: "Placed at Google",
     company: "Software Engineer",
     image: "/path-to-testimonial-photo-1.jpg",
-    text: "The mock tests perfectly simulated real interview conditions. I cracked 3 FAANG companies with consistent practice on this platform!",
+    text: "The aptitude tests were incredibly comprehensive and mirrored the actual difficulty level of top tech companies. They helped me identify and improve my weak areas systematically!",
     rating: 5,
     package: "₹42 LPA",
     preparationTime: "3 months"
@@ -25,73 +25,73 @@ const TestimonialSection = () => {
     rating: 5,
     package: "₹35 LPA",
     preparationTime: "4 months"
-  },
-  {
-    id: 3,
-    name: "Siddhart",
-    role: "Placed at Amazon",
-    company: "SDE 1",
-    image: "/path-to-testimonial-photo-3.jpg",
-    text: "From campus placements to Amazon - this platform's mock tests and coding challenges were crucial for my preparation journey.",
-    rating: 5,
-    package: "₹38 LPA",
-    preparationTime: "5 months"
-  },
-  {
-    id: 4,
-    name: "Zishan Ansari",
-    role: "Placed at Goldman Sachs",
-    company: "Quantitative Analyst",
-    image: "/path-to-testimonial-photo-4.jpg",
-    text: "The quantitative aptitude tests helped me immensely. The platform's questions matched the actual difficulty level perfectly.",
-    rating: 5,
-    package: "₹45 LPA",
-    preparationTime: "2 months"
-  },
-  {
-    id: 5,
-    name: "Aditya",
-    role: "Placed at Adobe",
-    company: "Product Manager",
-    image: "/path-to-testimonial-photo-5.jpg",
-    text: "The behavioral and HR mock interviews gave me the confidence to ace my final rounds. Excellent platform for holistic preparation!",
-    rating: 5,
-    package: "₹32 LPA",
-    preparationTime: "3 months"
-  },
-  {
-    id: 6,
-    name: "Rohit Chaudhary",
-    role: "Placed at Meta",
-    company: "Data Scientist",
-    image: "/path-to-testimonial-photo-6.jpg",
-    text: "System design mock tests were incredibly detailed. The platform helped me transition from service-based to product-based company!",
-    rating: 5,
-    package: "₹40 LPA",
-    preparationTime: "6 months"
-  },
-  {
-    id: 7,
-    name: "Riddhi Bansal",
-    role: "Placed at Flipkart",
-    company: "Backend Engineer",
-    image: "/path-to-testimonial-photo-7.jpg",
-    text: "The coding challenges and timed tests improved my problem-solving speed significantly. Landed my dream job in e-commerce!",
-    rating: 5,
-    package: "₹28 LPA",
-    preparationTime: "4 months"
-  },
-  {
-    id: 8,
-    name: "Vanshav",
-    role: "Placed at Uber",
-    company: "Mobile Developer",
-    image: "/path-to-testimonial-photo-8.jpg",
-    text: "Platform's mock tests covered all important patterns. The detailed solutions helped me understand optimal approaches.",
-    rating: 5,
-    package: "₹36 LPA",
-    preparationTime: "3 months"
   }
+  // {
+  //   id: 3,
+  //   name: "Siddhart",
+  //   role: "Placed at Amazon",
+  //   company: "SDE 1",
+  //   image: "/path-to-testimonial-photo-3.jpg",
+  //   text: "From campus placements to Amazon - this platform's mock tests and coding challenges were crucial for my preparation journey.",
+  //   rating: 5,
+  //   package: "₹38 LPA",
+  //   preparationTime: "5 months"
+  // },
+  // {
+  //   id: 4,
+  //   name: "Zishan Ansari",
+  //   role: "Placed at Goldman Sachs",
+  //   company: "Quantitative Analyst",
+  //   image: "/path-to-testimonial-photo-4.jpg",
+  //   text: "The quantitative aptitude tests helped me immensely. The platform's questions matched the actual difficulty level perfectly.",
+  //   rating: 5,
+  //   package: "₹45 LPA",
+  //   preparationTime: "2 months"
+  // },
+  // {
+  //   id: 5,
+  //   name: "Aditya",
+  //   role: "Placed at Adobe",
+  //   company: "Product Manager",
+  //   image: "/path-to-testimonial-photo-5.jpg",
+  //   text: "The behavioral and HR mock interviews gave me the confidence to ace my final rounds. Excellent platform for holistic preparation!",
+  //   rating: 5,
+  //   package: "₹32 LPA",
+  //   preparationTime: "3 months"
+  // },
+  // {
+  //   id: 6,
+  //   name: "Rohit Chaudhary",
+  //   role: "Placed at Meta",
+  //   company: "Data Scientist",
+  //   image: "/path-to-testimonial-photo-6.jpg",
+  //   text: "System design mock tests were incredibly detailed. The platform helped me transition from service-based to product-based company!",
+  //   rating: 5,
+  //   package: "₹40 LPA",
+  //   preparationTime: "6 months"
+  // },
+  // {
+  //   id: 7,
+  //   name: "Riddhi Bansal",
+  //   role: "Placed at Flipkart",
+  //   company: "Backend Engineer",
+  //   image: "/path-to-testimonial-photo-7.jpg",
+  //   text: "The coding challenges and timed tests improved my problem-solving speed significantly. Landed my dream job in e-commerce!",
+  //   rating: 5,
+  //   package: "₹28 LPA",
+  //   preparationTime: "4 months"
+  // },
+  // {
+  //   id: 8,
+  //   name: "Vanshav",
+  //   role: "Placed at Uber",
+  //   company: "Mobile Developer",
+  //   image: "/path-to-testimonial-photo-8.jpg",
+  //   text: "Platform's mock tests covered all important patterns. The detailed solutions helped me understand optimal approaches.",
+  //   rating: 5,
+  //   package: "₹36 LPA",
+  //   preparationTime: "3 months"
+  // }
 ];
 
   useEffect(() => {
