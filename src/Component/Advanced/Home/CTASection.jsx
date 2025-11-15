@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const CTASection = () => {
   return (
@@ -43,12 +44,16 @@ const CTASection = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
+               <Link to="/dashboard"> 
               <button className="bg-gray-900 hover:bg-gray-800 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl inline-block">
                 Start Test
               </button>
+              </Link>
+               <Link to="/blog"> 
               <button className="border-2 border-gray-900 hover:bg-gray-900 hover:text-white text-gray-900 font-semibold px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105">
-                View All Tests
+                Read Blogs
               </button>
+              </Link>
             </div>
 
             {/* Stats */}

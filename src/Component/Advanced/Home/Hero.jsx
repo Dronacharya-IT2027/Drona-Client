@@ -52,10 +52,12 @@ export default function Hero() {
               Get Started
             </button>
             </Link>
+            <Link to="/blog"> 
             <button className="text-secondary mt-3 font-medium flex items-center space-x-2 text-sm sm:text-base hover:text-orange-600 transition-colors duration-200">
               <span>View our blog</span>
               <span className="text-lg sm:text-xl">↗</span>
             </button>
+            </Link>
           </div>
         </div>
       </div>

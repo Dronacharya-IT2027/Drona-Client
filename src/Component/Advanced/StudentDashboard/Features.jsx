@@ -28,6 +28,7 @@ const Features = () => {
         const res = await axios.get(`${API_BASE}/api/auth/admin/tests`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        console.log(res);
 
         if (res.data && res.data.success) {
          setShowAdvancedFeatures(true);
@@ -71,6 +72,8 @@ const Features = () => {
       route: "/admin"
     }
   ];
+  console.log("adarsh");
+   console.log(showAdvancedFeatures);
 
   const handleViewClick = (route) => {
     navigate(route);

@@ -22,7 +22,8 @@ import GDandInterviewpage from "./Pages/GDandInterviewpage";
 import SecureTestApp from "./Pages/SecureTestApp";
 import SignUp from './Component/Advanced/SignUp/view';
 import Login from './Component/Advanced/Login/view';
-
+import BlogPage from "./Pages/BlogPage";
+import NotFound from "./Pages/NotFound";
 //admin
 
 import Admin from "./Pages/Admin";
@@ -63,6 +64,7 @@ function App() {
                 {!isSuperAdminUser ? (
               <>
                 <Route path="/" element={<Home />} />
+                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/aptitude-test" element={<ProtectedRoute><Aptitest /></ProtectedRoute>} />
                 <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
@@ -81,10 +83,7 @@ function App() {
                 <Route
                   path="*"
                   element={
-                    <div className="flex flex-col items-center justify-center h-screen text-center">
-                      <h1 className="text-3xl font-bold text-red-500 mb-2">404 - Page Not Found</h1>
-                      <p className="text-gray-600">The page you are looking for doesn’t exist.</p>
-                    </div>
+                    <NotFound/>
                   }
                 />
               </>

@@ -1,36 +1,38 @@
 export default function StatsCards() {
+ 
   const cards = [
-    {
-      id: 1,
-      badge: "Education",
-      badgeColor: "bg-purple-300",
-      bgColor: "bg-white",
-      label: "subjects",
-      value: "+40"
-    },
-    {
-      id: 2,
-      badge: "Online",
-      badgeColor: "bg-yellow-400",
-      bgColor: "bg-purple-400",
-      label: "courses",
-      value: "+120",
-      textColor: "text-white"
-    },
-    {
-      id: 3,
-      badge: (
-        <div className="flex items-center gap-1">
-          <span className="text-orange-500">★★★★★</span>
-          <span className="text-gray-900 font-bold">5.0</span>
-        </div>
-      ),
-      badgeColor: "bg-white",
-      bgColor: "bg-yellow-400",
-      label: "learner reviews",
-      value: "+180k"
-    }
-  ];
+  {
+    id: 1,
+    badge: "Tests",
+    badgeColor: "bg-purple-300",
+    bgColor: "bg-white",
+    label: "Mock Tests",
+    value: "+25"
+  },
+  {
+    id: 2,
+    badge: (
+      <div className="flex items-center gap-1">
+        <span className="text-secondary">★★★★★</span>
+        <span className="text-primary font-bold">4.9</span>
+      </div>
+    ),
+     badgeColor: "bg-white",
+    bgColor: "bg-yellow-400",
+    label: "Student Reviews",
+    value: "+3,500"
+  },
+  {
+    id: 3,
+    badge: "Students",
+    badgeColor: "bg-yellow-400",
+    bgColor: "bg-purple-400",
+    label: "Active Students",
+    value: "+1,200",
+    textColor: "text-white"
+  }
+];
+
 
   return (
 <div className="hidden md:block absolute md:ml-8 lg:ml-20 bottom-2 left-2 md:bottom-3 md:left-3 right-2 md:right-3 z-10">
