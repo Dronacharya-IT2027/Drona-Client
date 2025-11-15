@@ -1,16 +1,31 @@
-import React from 'react';
-import { Linkedin, Mail, Users, Target, Award } from 'lucide-react';
-import { Link } from "react-router-dom";
-
+import React, { useState, useEffect } from 'react';
+import { Linkedin, Mail, Users, Target, Award, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLocation } from "react-router-dom";
 const About = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+    const location = useLocation();
+  
+    useEffect(() => {
+      if (location.hash) {
+        const element = document.querySelector(location.hash);
+        if (element) {
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: "smooth" });
+          }, 200);
+        }
+      }
+    }, [location]);
+
   const teamMembers = [
     {
       id: 1,
       name: "Adarsh Kumar",
       role: "Full Stack Developer",
-      image: "/about/Adarsh-jha.jpg", // Replace with actual image path
+      image: "/about/Adarsh-jha.jpg",
       linkedin: "https://linkedin.com/in/adarsh-kumar",
-      github: "https://github.com/adarsh-kumar",
       email: "adarsh@dronacharya.com",
       contributions: [
         "Backend Architecture",
@@ -22,14 +37,11 @@ const About = () => {
     {
       id: 2,
       name: "Kishan Kumar",
-      role: "Full Stack Developer & Project Manager",
-      image: "/about/kishan-kumar.jpg", // Replace with actual image path
+      role: "Full Stack Developer",
+      image: "/about/kishan-kumar.jpg",
       linkedin: "https://linkedin.com/in/kishan-kumar",
-      github: "https://github.com/kishan-kumar",
       email: "kishan@dronacharya.com",
       contributions: [
-        
-        
         "Project Management",
         "React Development",
         "Deployment",
@@ -40,9 +52,8 @@ const About = () => {
       id: 3,
       name: "Manas Singh",
       role: "Full Stack Developer",
-      image: "/about/Manas-Singh.png", // Replace with actual image path
+      image: "/about/Manas-Singh.png",
       linkedin: "https://linkedin.com/in/manas-singh",
-      github: "https://github.com/manas-singh",
       email: "manas@dronacharya.com",
       contributions: [
         "Project Management",
@@ -71,202 +82,360 @@ const About = () => {
     }
   ];
 
+  // Auto-rotate every 10 seconds
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    
+    const interval = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % teamMembers.length);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
+
+  const getCirclePosition = (index) => {
+    const totalMembers = teamMembers.length;
+    const angle = (index - activeIndex) * (360 / totalMembers);
+    const radius = 350; // Increased radius for better visibility
+    const angleRad = (angle * Math.PI) / 180;
+    
+    return {
+      x: Math.sin(angleRad) * radius,
+      y: -Math.cos(angleRad) * radius,
+      isActive: index === activeIndex
+    };
+  };
+
+  const handleNext = () => {
+    setIsAutoPlaying(false);
+    setActiveIndex((prev) => (prev + 1) % teamMembers.length);
+  };
+
+  const handlePrev = () => {
+    setIsAutoPlaying(false);
+    setActiveIndex((prev) => (prev - 1 + teamMembers.length) % teamMembers.length);
+  };
+
+  const activeMember = teamMembers[activeIndex];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-yellow-50 py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         
         {/* Header Section */}
-        <div className="text-center mb-16 mt-16">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-kodchasan font-bold text-gray-900 mb-4"
-          >
-            Team <span className="text-orange-500">Dronacharya</span>
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-700 font-kodchasan max-w-3xl mx-auto"
-          >
-            Building the future of placement preparation, one mock test at a time
-          </motion.p>
-        </div>
+     <div className="text-center mb-16 mt-16">
+  <h1 className="text-4xl md:text-6xl font-kodchasan font-bold text-primary mb-4 animate-fade-in">
+    Team <span className="text-secondary">Dronacharya</span>
+  </h1>
+  <p className="text-xl md:text-2xl text-gray-700 font-kodchasan max-w-3xl mx-auto">
+    Empowering students with smarter tools, guidance, and mock tests for placement success.
+  </p>
+</div>
 
-        {/* Project Highlights */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+
+   
+
+        {/* Team Members Circular Carousel Section */}
+        <div className="mb-20">
+         
+          <div className="relative">
+            {/* Circular Carousel Container */}
+            <div className="relative h-[800px] lg:-mt-36 flex items-center justify-center">
+              
+              {/* Center - Active Member (Large) */}
+              <div className="absolute z-50 flex flex-col items-center left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                <div 
+                  key={activeMember.id}
+                  className="animate-scale-in flex flex-col items-center"
+                >
+                  {/* Large Center Circle with Image */}
+                  <div className="rounded-full overflow-hidden border-8 border-secondary w-64 h-64 shadow-2xl shadow-secondary/40 mb-6">
+                    <div className="w-full h-full bg-gradient-to-br from-accent1/30 to-accent2/30 flex items-center justify-center">
+                      {activeMember.image ? (
+                        <img 
+                          src={activeMember.image} 
+                          alt={activeMember.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="text-8xl font-bold text-white">
+                          {activeMember.name.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Name and Role */}
+                  <div className="text-center mb-4">
+                    <h3 className="text-3xl font-kodchasan font-bold text-primary mb-2">
+                      {activeMember.name}
+                    </h3>
+                    <p className="text-secondary font-semibold text-xl font-kodchasan">
+                      {activeMember.role}
+                    </p>
+                  </div>
+
+                  {/* Social Links */}
+                  <div className="flex justify-center items-center space-x-4">
+                    <a
+                      href={activeMember.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-4 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-110 shadow-lg"
+                      title="LinkedIn"
+                    >
+                      <Linkedin size={24} />
+                    </a>
+                    
+                    <a
+                      href={`mailto:${activeMember.email}`}
+                      className="p-4 bg-secondary text-white rounded-full hover:bg-orange-600 transition-all duration-300 transform hover:scale-110 shadow-lg"
+                      title="Email"
+                    >
+                      <Mail size={24} />
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Rotating Team Member Circles (Smaller) */}
+              <div className="absolute w-full h-full">
+                {teamMembers.map((member, index) => {
+                  const pos = getCirclePosition(index);
+                  const isActive = pos.isActive;
+                  
+                  return (
+                    <div
+                      key={member.id}
+                      className={`absolute transition-all duration-700 ease-in-out cursor-pointer ${
+                        isActive ? 'opacity-0 pointer-events-none' : 'opacity-100 z-10'
+                      }`}
+                      style={{
+                        transform: `translate(${pos.x}px, ${pos.y}px)`,
+                        left: '50%',
+                        top: '50%',
+                        marginLeft: '-90px',
+                        marginTop: '-90px'
+                      }}
+                      onClick={() => {
+                        setActiveIndex(index);
+                        setIsAutoPlaying(false);
+                      }}
+                    >
+                      <div 
+                        className="rounded-full overflow-hidden border-4 border-accent1 w-44 h-44 shadow-2xl shadow-accent1/30 hover:scale-110 hover:border-secondary transition-all duration-300"
+                      >
+                        <div className="w-full h-full bg-gradient-to-br from-accent1/30 to-accent2/30 flex items-center justify-center">
+                          {member.image ? (
+                            <img 
+                              src={member.image} 
+                              alt={member.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="text-5xl font-bold text-white">
+                              {member.name.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Name label */}
+                      <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                        <p className="text-sm font-bold text-gray-700 font-kodchasan">{member.name}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Navigation Arrows */}
+              <button
+                onClick={handlePrev}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-white rounded-full shadow-xl hover:bg-secondary hover:text-white transition-all duration-300 hover:scale-110"
+                aria-label="Previous team member"
+              >
+                <ChevronLeft size={28} className="text-gray-700" />
+              </button>
+              
+              <button
+                onClick={handleNext}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-4 bg-white rounded-full shadow-xl hover:bg-secondary hover:text-white transition-all duration-300 hover:scale-110"
+                aria-label="Next team member"
+              >
+                <ChevronRight size={28} className="text-gray-700" />
+              </button>
+            </div>
+
+            {/* Navigation Dots */}
+            <div className="flex justify-center space-x-3 mt-8">
+              {teamMembers.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setActiveIndex(index);
+                    setIsAutoPlaying(false);
+                  }}
+                  className={`rounded-full transition-all duration-300 ${
+                    index === activeIndex 
+                      ? 'bg-secondary w-10 h-3' 
+                      : 'bg-gray-300 hover:bg-gray-400 w-3 h-3'
+                  }`}
+                  aria-label={`Go to team member ${index + 1}`}
+                />
+              ))}
+            </div>
+
+            {/* Auto-play indicator */}
+            <div className="text-center mt-4">
+              <button
+                onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+                className="text-sm text-gray-500 hover:text-gray-700 transition-colors font-kodchasan"
+              >
+                {isAutoPlaying ? '⏸ Pause auto-rotate' : '▶ Resume auto-rotate'}
+              </button>
+            </div>
+          </div>
+        </div>
+        
+              {/* Project Highlights */}
+        <div className="grid md:grid-cols-3 gap-8 mb-20">
           {projectHighlights.map((highlight, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.2 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200 text-center"
+              className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 border border-accent1/20 text-center transform hover:-translate-y-2"
+              style={{ animationDelay: `${index * 0.2}s` }}
             >
-              <div className="text-blue-600 mb-4 flex justify-center">
+              <div className="text-secondary mb-4 flex justify-center transform hover:scale-110 transition-transform duration-300">
                 {highlight.icon}
               </div>
-              <h3 className="text-xl font-kodchasan font-bold text-gray-900 mb-3">
+              <h3 className="text-xl font-kodchasan font-bold text-primary mb-3">
                 {highlight.title}
               </h3>
               <p className="text-gray-600 leading-relaxed">
                 {highlight.description}
               </p>
-            </motion.div>
+            </div>
           ))}
         </div>
+     {/* Contact Section */}
+<section id="contact" className="text-center lg:mt-24 mb-24 animate-fade-in">
+  <h3 className="text-2xl md:text-3xl font-kodchasan font-bold text-primary mb-4">
+    Have a suggestion or facing an issue?
+  </h3>
 
-        {/* Team Members Section */}
-        <div className="mb-16">
-          <motion.h2 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="text-3xl md:text-4xl font-kodchasan font-bold text-center text-gray-900 mb-12"
-          >
-            Meet Our <span className="text-orange-500">Team</span>
-          </motion.h2>
+  <button
+    onClick={() => setIsContactModalOpen(true)}
+    className="bg-secondary hover:bg-orange-600 text-white font-kodchasan font-bold px-8 py-4 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-2xl"
+  >
+    Contact Us
+  </button>
+</section>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
-              <motion.div
-                key={member.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.6 + index * 0.2 }}
-                className="bg-white rounded-2xl overflow-hidden shadow-xl border border-gray-200 hover:shadow-2xl transition-all duration-300"
-              >
-                {/* Profile Image */}
-                <div className="h-64 bg-gradient-to-br from-blue-100 to-purple-100 relative">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-40 h-40 bg-gray-300 rounded-full flex items-center justify-center text-gray-500 text-lg">
-                      {member.image ? (
-                        <img 
-                          src={member.image} 
-                          alt={member.name}
-                          className="w-full h-full rounded-full object-cover"
-                        />
-                      ) : (
-                        "Photo"
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Member Info */}
-                <div className="p-6">
-                  <h3 className="text-2xl font-kodchasan font-bold text-gray-900 mb-2">
-                    {member.name}
-                  </h3>
-                  <p className="text-orange-500 font-semibold mb-4">
-                    {member.role}
-                  </p>
-                  
-                  <p className="text-gray-600 mb-4 leading-relaxed">
-                    {member.bio}
-                  </p>
-
-                  {/* Contributions */}
-                  <div className="mb-4">
-                    <h4 className="font-kodchasan font-semibold text-gray-900 mb-2">
-                      Key Contributions:
-                    </h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                      {member.contributions.map((contribution, idx) => (
-                        <li key={idx} className="flex items-center">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
-                          {contribution}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Social Links */}
-                  <div className="flex justify-center space-x-4 pt-4 border-t border-gray-200">
-                    <a
-                      href={member.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors duration-300"
-                      title="LinkedIn"
-                    >
-                      <Linkedin size={20} />
-                    </a>
-                    
-                    <a
-                      href={`mailto:${member.email}`}
-                      className="p-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition-colors duration-300"
-                      title="Email"
-                    >
-                      <Mail size={20} />
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Team Story Section */}
-        {/* <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
-          className="bg-white rounded-2xl p-8 md:p-12 shadow-lg border border-gray-200 mb-16"
-        >
-          <div className="text-center max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-kodchasan font-bold text-gray-900 mb-6">
-              Our <span className="text-orange-500">Story</span>
-            </h2>
-            <div className="text-lg text-gray-700 leading-relaxed space-y-4">
-              <p>
-                Team Dronacharya was born from our own struggles during placement season. 
-                We experienced firsthand the challenges students face - lack of quality practice material, 
-                expensive coaching institutes, and the anxiety of facing unknown interview patterns.
-              </p>
-              <p>
-                Inspired by the legendary teacher Dronacharya from Indian mythology, who trained 
-                the Pandavas and Kauravas in warfare, we aim to mentor today's students in their 
-                battle for placements. Our platform is built on the principles of accessibility, 
-                quality, and comprehensive preparation.
-              </p>
-              <p className="font-semibold text-gray-900">
-                Together, we're revolutionizing how students prepare for their dream careers, 
-                making quality placement preparation accessible to everyone, everywhere.
-              </p>
-            </div>
-          </div>
-        </motion.div> */}
-
-        {/* Call to Action */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="text-center"
-        >
-          <h3 className="text-2xl md:text-3xl font-kodchasan font-bold text-gray-900 mb-4">
-            Ready to start your placement journey?
-          </h3>
-          <Link to="/dashboard">
-          <button className="bg-orange-500 hover:bg-orange-600 text-white font-kodchasan font-bold px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105">
-            Explore Mock Tests
-          </button>
-          </Link>
-        </motion.div>
 
       </div>
+       {/* Contact Modal */}
+{isContactModalOpen && (
+  <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+
+    <div className="bg-white rounded-2xl shadow-2xl w-[90%] max-w-lg p-8 relative animate-fade-in">
+
+      {/* Close Button */}
+      <button
+        onClick={() => setIsContactModalOpen(false)}
+        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl"
+      >
+        ✕
+      </button>
+
+      <h2 className="text-2xl font-kodchasan font-bold text-primary mb-6 text-center">
+        Contact Us
+      </h2>
+
+      <form className="space-y-5">
+        {/* Email */}
+        <div>
+          <label className="block text-primary font-semibold mb-1 font-kodchasan">
+            Email Address
+          </label>
+          <input
+            type="email"
+            placeholder="Your email"
+            className="w-full border border-gray-300 bg-gray-50 rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary focus:outline-none"
+          />
+        </div>
+
+        {/* Phone */}
+        <div>
+          <label className="block text-primary font-semibold mb-1 font-kodchasan">
+            Phone Number
+          </label>
+          <input
+            type="text"
+            placeholder="Your phone number"
+            className="w-full border border-gray-300 bg-gray-50 rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary focus:outline-none"
+          />
+        </div>
+
+        {/* Issue / Suggestion */}
+        <div>
+          <label className="block text-primary font-semibold mb-1 font-kodchasan">
+            Your Issue / Suggestion
+          </label>
+          <textarea
+            rows="4"
+            placeholder="Describe your issue or suggestion"
+            className="w-full border border-gray-300 bg-gray-50 rounded-lg px-4 py-3 focus:ring-2 focus:ring-secondary focus:outline-none"
+          ></textarea>
+        </div>
+
+        {/* Send Button */}
+        <button
+          type="submit"
+          className="w-full bg-secondary hover:bg-orange-600 text-white font-kodchasan font-bold py-3 rounded-xl transition-all"
+        >
+          Send Message
+        </button>
+      </form>
+    </div>
+
+  </div>
+)}
+
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 0.8s ease-out;
+        }
+
+        .animate-scale-in {
+          animation: scale-in 0.7s ease-out;
+        }
+      `}</style>
     </div>
   );
-};
-
-// Add motion components if not already imported
-const motion = {
-  h1: ({ children, ...props }) => <h1 {...props}>{children}</h1>,
-  p: ({ children, ...props }) => <p {...props}>{children}</p>,
-  div: ({ children, ...props }) => <div {...props}>{children}</div>,
-  h2: ({ children, ...props }) => <h2 {...props}>{children}</h2>
 };
 
 export default About;
