@@ -223,7 +223,15 @@ const AptitudeTestPage = () => {
           };
         });
 
-        setUpcomingTests(mapped);
+        const submittedTestIds = userTests.map(ut => 
+          ut.rawTest?._id || ut.rawTest?.id || ut.id
+        ).filter(Boolean);
+
+        const filteredUpcomingTests = mapped.filter(test => 
+          !submittedTestIds.includes(test.id)
+        );
+
+        setUpcomingTests(filteredUpcomingTests);
       } catch (err) {
         console.error("Failed to fetch upcoming tests:", err);
         setUpcomingTests([]);
@@ -232,8 +240,11 @@ const AptitudeTestPage = () => {
       }
     };
 
-    fetchUpcoming();
-  }, []);
+    if (!loadingUserTests) {
+      fetchUpcoming();
+    }
+  }, [userTests, loadingUserTests]); // Add dependencies
+
 
   // NEW: Fetch tests the current user has taken (me/tests)
   useEffect(() => {
