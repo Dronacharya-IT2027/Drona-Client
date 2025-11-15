@@ -517,6 +517,8 @@ router.post('/:testId/submit', auth, async (req, res) => {
       });
     }
 
+    score = Math.round(score);
+    
     // Now persist: add entry into user.testsGiven and increment totalMarks
     // Use a single atomic update to avoid races
     const updatedUser = await User.findByIdAndUpdate(

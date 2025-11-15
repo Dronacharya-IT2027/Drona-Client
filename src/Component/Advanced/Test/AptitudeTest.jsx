@@ -318,7 +318,8 @@ const AptitudeTestPage = () => {
             title: testObj.title || testObj.name || "Untitled Test",
             date,
             marks,
-            rawTest: testObj
+            rawTest: testObj,
+            isOver: testObj.isOver || false
           };
         });
 
@@ -449,6 +450,11 @@ const AptitudeTestPage = () => {
       {/* View Answers button (opens answerDriveLink) */}
       <button
         onClick={() => {
+          console.log("Tickk", ut);
+          if(!ut.isOver){
+            alert("Test is still ongoing. Answers will be available after the test is over.");
+            return;
+          }
           const link =
             (ut.test && ut.test.answerDriveLink) ||
             (ut.rawTest && ut.rawTest.answerDriveLink) ||

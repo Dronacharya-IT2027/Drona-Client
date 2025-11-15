@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require('../models/User');
 const auth = require('../middlewares/auth');
 const mongoose = require('mongoose');
+const {isTestOver} = require('../utils/Testfunction');
 
 router.get('/rankings/branch/:branch', async (req, res) => {
   try {
@@ -165,6 +166,7 @@ router.get('/me/tests', auth, async (req, res) => {
 
         return {
           test: testDoc,
+          isOver: isTestOver(testDoc.endDate, testDoc.endTime),
           marks
         };
       })

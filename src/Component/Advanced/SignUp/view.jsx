@@ -21,7 +21,9 @@ import AuthContext from "../../../auth/authContext";
 
 /* Robust env lookup (Vite / CRA / Next) */
 const API_BASE =
-  (typeof import.meta !== "undefined" && import.meta.env && import.meta.env.VITE_API_BASE_URL) ||
+  (typeof import.meta !== "undefined" &&
+    import.meta.env &&
+    import.meta.env.VITE_API_BASE_URL) ||
   process.env.REACT_APP_API_BASE_URL ||
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   "";
@@ -48,9 +50,21 @@ export default function SignUp() {
   const [resendLoading, setResendLoading] = useState(false);
   const [requestId, setRequestId] = useState("");
   const [cooldown, setCooldown] = useState(0);
+  const [passwordError, setPasswordError] = useState("");
 
   const navigate = useNavigate();
   const { verify } = useContext(AuthContext);
+  const [linkValidation, setLinkValidation] = useState({
+    linkedin: false,
+    github: false,
+    leetcode: false,
+  });
+
+  const [linkErrors, setLinkErrors] = useState({
+    linkedin: "",
+    github: "",
+    leetcode: "",
+  });
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -64,13 +78,16 @@ export default function SignUp() {
     if (!enrollmentNumber.trim()) return "Please enter enrollment number.";
     if (!branch.trim()) return "Please select/enter your branch.";
     if (!email.trim()) return "Please enter email.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return "Please enter a valid email.";
-    if (!password || password.length < 6) return "Password must be at least 6 characters.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
+      return "Please enter a valid email.";
+    if (!password || password.length < 6)
+      return "Password must be at least 6 characters.";
     return null;
   };
 
   const validateStep2 = () => {
-    if (!otp.trim() || otp.length !== 6) return "Please enter a valid 6-digit OTP.";
+    if (!otp.trim() || otp.length !== 6)
+      return "Please enter a valid 6-digit OTP.";
     return null;
   };
 
@@ -128,7 +145,10 @@ export default function SignUp() {
       setCooldown(30);
     } catch (err) {
       console.error("Send OTP error:", err);
-      setError({ title: "Network error", message: "Unable to reach server. Please try again." });
+      setError({
+        title: "Network error",
+        message: "Unable to reach server. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -172,7 +192,10 @@ export default function SignUp() {
       setError(null);
     } catch (err) {
       console.error("Verify OTP error:", err);
-      setError({ title: "Network error", message: "Unable to reach server. Please try again." });
+      setError({
+        title: "Network error",
+        message: "Unable to reach server. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -203,11 +226,18 @@ export default function SignUp() {
         return;
       }
 
-      setError({ title: "OTP Sent", message: "New OTP has been sent to your email.", type: "success" });
+      setError({
+        title: "OTP Sent",
+        message: "New OTP has been sent to your email.",
+        type: "success",
+      });
       setCooldown(30);
     } catch (err) {
       console.error("Resend OTP error:", err);
-      setError({ title: "Network error", message: "Unable to resend OTP. Please try again." });
+      setError({
+        title: "Network error",
+        message: "Unable to resend OTP. Please try again.",
+      });
     } finally {
       setResendLoading(false);
     }
@@ -218,6 +248,50 @@ export default function SignUp() {
     setOtp("");
     setError(null);
     setVerificationToken("");
+  };
+  const handleChangepass = (e) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "password") {
+      const strongPassword =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+      setPasswordError(
+        strongPassword.test(value)
+          ? ""
+          : "Password must include uppercase, lowercase, number & special character"
+      );
+    }
+  };
+
+  // ⭐ HANDLE URL VALIDATION FUNCTION
+  const handleUrlsRegex = (e) => {
+    const { name, value } = e.target;
+
+    setForm((prev) => ({ ...prev, [name]: value }));
+
+    // Regex patterns
+    const patterns = {
+      linkedin: /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[A-Za-z0-9\-_\/]+$/,
+      github: /^(https?:\/\/)?(www\.)?github\.com\/[A-Za-z0-9\-]+$/,
+      leetcode: /^(https?:\/\/)?(www\.)?leetcode\.com\/u\/[A-Za-z0-9_]+\/?$/,
+    };
+
+    const isValid = patterns[name]?.test(value);
+
+    // Update validation status
+    setLinkValidation((prev) => ({
+      ...prev,
+      [name]: isValid,
+    }));
+
+    // Update error tooltip
+    setLinkErrors((prev) => ({
+      ...prev,
+      [name]: isValid ? "" : `Enter a valid ${name} URL`,
+    }));
   };
 
   return (
@@ -231,7 +305,9 @@ export default function SignUp() {
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-secondary to-accent1 flex items-center justify-center shadow-lg">
                   <UserPlus className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-bold text-primary">Smart Placement</span>
+                <span className="text-xl font-bold text-primary">
+                  Smart Placement
+                </span>
               </div>
 
               <div className="space-y-6">
@@ -239,9 +315,10 @@ export default function SignUp() {
                   Join <span className="text-secondary">Smart</span>{" "}
                   <span className="text-accent1">Placement</span> Prep
                 </h1>
-                
+
                 <p className="text-primary/80 text-lg leading-relaxed">
-                  Start your journey to ace placements with comprehensive aptitude, GD, and interview training.
+                  Start your journey to ace placements with comprehensive
+                  aptitude, GD, and interview training.
                 </p>
 
                 <div className="space-y-3">
@@ -271,12 +348,20 @@ export default function SignUp() {
             <div className="relative z-10">
               <div className="flex justify-between items-center text-sm text-primary/60 mb-2">
                 <span>Step {step} of 3</span>
-                <span>{step === 1 ? "Basic Info" : step === 2 ? "Verify Email" : "Complete"}</span>
+                <span>
+                  {step === 1
+                    ? "Basic Info"
+                    : step === 2
+                    ? "Verify Email"
+                    : "Complete"}
+                </span>
               </div>
               <div className="w-full bg-white/50 rounded-full h-2">
                 <div
                   className="bg-gradient-to-r from-secondary to-accent1 rounded-full h-2 transition-all duration-500 ease-out"
-                  style={{ width: step === 1 ? "33%" : step === 2 ? "66%" : "100%" }}
+                  style={{
+                    width: step === 1 ? "33%" : step === 2 ? "66%" : "100%",
+                  }}
                 />
               </div>
             </div>
@@ -293,18 +378,29 @@ export default function SignUp() {
             {step === 1 && (
               <form onSubmit={handleSendOTP} className="space-y-6">
                 <div className="text-center lg:text-left mb-6">
-                  <h2 className="text-2xl font-bold text-primary mb-2">Create Student Account</h2>
-                  <p className="text-primary/60">Enter your details to get started</p>
+                  <h2 className="text-2xl font-bold text-primary mb-2">
+                    Create Student Account
+                  </h2>
+                  <p className="text-primary/60">
+                    Enter your details to get started
+                  </p>
                 </div>
 
                 {error && (
                   <div className="p-4 rounded-lg bg-red-50 border border-red-200">
                     <div className="flex items-start gap-3">
                       <div className="flex-1">
-                        <div className="font-semibold text-red-800 text-sm">{error.title}</div>
-                        <div className="text-red-700 text-sm">{error.message}</div>
+                        <div className="font-semibold text-red-800 text-sm">
+                          {error.title}
+                        </div>
+                        <div className="text-red-700 text-sm">
+                          {error.message}
+                        </div>
                       </div>
-                      <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700">
+                      <button
+                        onClick={() => setError(null)}
+                        className="text-red-500 hover:text-red-700"
+                      >
                         ✕
                       </button>
                     </div>
@@ -313,7 +409,9 @@ export default function SignUp() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-primary/80">Full Name</label>
+                    <label className="text-sm font-medium text-primary/80">
+                      Full Name
+                    </label>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
                       <input
@@ -327,7 +425,9 @@ export default function SignUp() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-primary/80">Enrollment Number</label>
+                    <label className="text-sm font-medium text-primary/80">
+                      Enrollment Number
+                    </label>
                     <div className="relative">
                       <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
                       <input
@@ -341,7 +441,9 @@ export default function SignUp() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-primary/80">Email</label>
+                    <label className="text-sm font-medium text-primary/80">
+                      Email
+                    </label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
                       <input
@@ -356,104 +458,206 @@ export default function SignUp() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-primary/80">Password</label>
+                    <label className="text-sm font-medium text-primary/80">
+                      Password
+                    </label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+
                       <input
                         name="password"
                         type={showPassword ? "text" : "password"}
                         value={form.password}
-                        onChange={handleChange}
-                        placeholder="min 6 characters"
-                        className="w-full pl-10 pr-12 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                        onChange={handleChangepass}
+                        placeholder="Strong password required"
+                        className={`w-full pl-10 pr-12 py-3 border rounded-xl bg-white/50 focus:ring-2 transition-all duration-200 outline-none 
+      ${
+        passwordError
+          ? "border-red-400 focus:ring-red-200"
+          : "border-primary/10 focus:ring-secondary/20"
+      }`}
+                        // 🔒 Enforces strong password
+                        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$"
+                        title="Password must be 8+ characters and include uppercase, lowercase, number, and special character"
                       />
+
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-primary/40 hover:text-primary/60"
                       >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
                       </button>
                     </div>
+
+                    {passwordError && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {passwordError}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2 md:col-span-2">
-                  <label className="text-sm font-medium text-primary/80">Section</label>
-<div className="relative">
-  <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+                    <label className="text-sm font-medium text-primary/80">
+                      Section
+                    </label>
+                    <div className="relative">
+                      <BookOpen className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
 
-  <select
-    name="branch"
-    value={form.branch}
-    onChange={handleChange}
-    className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 text-primary
+                      <select
+                        name="branch"
+                        value={form.branch}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 text-primary
                focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none appearance-none"
-  >
-    <option value="">Select Section</option>
-    <option value="T6">T6</option>
-    <option value="T7">T7</option>
-    <option value="T18">T18</option>
-    <option value="T5">T5</option>
-  </select>
+                      >
+                        <option value="">Select Section</option>
+                        <option value="T6">T6</option>
+                        <option value="T7">T7</option>
+                        <option value="T18">T18</option>
+                        <option value="T5">T5</option>
+                      </select>
 
-  {/* Dropdown arrow */}
-  <svg
-    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/40 pointer-events-none"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    viewBox="0 0 24 24"
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-  </svg>
-</div>
-
+                      {/* Dropdown arrow */}
+                      <svg
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/40 pointer-events-none"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
                   </div>
 
+                  {/* LINKEDIN */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-primary/80">LinkedIn</label>
+                    <label className="text-sm font-medium text-primary/80">
+                      LinkedIn
+                    </label>
+
                     <div className="relative">
                       <LinkIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+
                       <input
                         name="linkedin"
                         value={form.linkedin}
-                        onChange={handleChange}
-                        placeholder="linkedin.com/in/username"
+                        onChange={handleUrlsRegex}
+                        placeholder="https://www.linkedin.com/in/abc/"
                         required
-                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                        className={`w-full pl-10 pr-10 py-3 rounded-xl bg-white/50 border transition-all duration-200 outline-none
+        ${
+          form.linkedin.length === 0
+            ? "border-primary/10"
+            : linkValidation.linkedin
+            ? "border-green-500 focus:ring-green-200"
+            : "border-red-500 focus:ring-red-200"
+        }`}
                       />
+
+                      {/* ✔ Checkmark when valid */}
+                      {linkValidation.linkedin && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-lg">
+                          ✔
+                        </span>
+                      )}
                     </div>
+
+                    {/* Tooltip error */}
+                    {linkErrors.linkedin && (
+                      <p className="text-red-500 text-xs ml-1">
+                        {linkErrors.linkedin}
+                      </p>
+                    )}
                   </div>
 
+                  {/* GITHUB */}
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-primary/80">GitHub</label>
+                    <label className="text-sm font-medium text-primary/80">
+                      GitHub
+                    </label>
+
                     <div className="relative">
                       <Github className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+
                       <input
                         name="github"
                         value={form.github}
-                        onChange={handleChange}
-                        placeholder="github.com/username"
+                        onChange={handleUrlsRegex}
+                        placeholder="https://github.com/abc"
                         required
-                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                        className={`w-full pl-10 pr-10 py-3 rounded-xl bg-white/50 border transition-all duration-200 outline-none
+        ${
+          form.github.length === 0
+            ? "border-primary/10"
+            : linkValidation.github
+            ? "border-green-500 focus:ring-green-200"
+            : "border-red-500 focus:ring-red-200"
+        }`}
                       />
+
+                      {/* ✔ Checkmark */}
+                      {linkValidation.github && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-lg">
+                          ✔
+                        </span>
+                      )}
                     </div>
+
+                    {linkErrors.github && (
+                      <p className="text-red-500 text-xs ml-1">
+                        {linkErrors.github}
+                      </p>
+                    )}
                   </div>
 
-                  {/* LeetCode Field - Added Back */}
+                  {/* LEETCODE */}
                   <div className="space-y-2 md:col-span-2">
-                    <label className="text-sm font-medium text-primary/80">LeetCode</label>
+                    <label className="text-sm font-medium text-primary/80">
+                      LeetCode
+                    </label>
+
                     <div className="relative">
                       <Code className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-primary/40" />
+
                       <input
                         name="leetcode"
                         value={form.leetcode}
-                        onChange={handleChange}
-                        placeholder="leetcode.com/username "
+                        onChange={handleUrlsRegex}
+                        placeholder="https://leetcode.com/u/abc/"
                         required
-                        className="w-full pl-10 pr-4 py-3 border border-primary/10 rounded-xl bg-white/50 focus:ring-2 focus:ring-secondary/20 focus:border-secondary transition-all duration-200 outline-none"
+                        className={`w-full pl-10 pr-10 py-3 rounded-xl bg-white/50 border transition-all duration-200 outline-none
+        ${
+          form.leetcode.length === 0
+            ? "border-primary/10"
+            : linkValidation.leetcode
+            ? "border-green-500 focus:ring-green-200"
+            : "border-red-500 focus:ring-red-200"
+        }`}
                       />
+
+                      {/* ✔ Checkmark */}
+                      {linkValidation.leetcode && (
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 text-lg">
+                          ✔
+                        </span>
+                      )}
                     </div>
+
+                    {linkErrors.leetcode && (
+                      <p className="text-red-500 text-xs ml-1">
+                        {linkErrors.leetcode}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -478,7 +682,11 @@ export default function SignUp() {
 
                 <div className="text-center text-sm text-primary/60">
                   Already have an account?{" "}
-                  <button type="button" onClick={() => navigate("/login")} className="text-secondary font-semibold hover:text-accent1 transition-colors">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/login")}
+                    className="text-secondary font-semibold hover:text-accent1 transition-colors"
+                  >
                     Log in
                   </button>
                 </div>
@@ -488,34 +696,54 @@ export default function SignUp() {
             {step === 2 && (
               <form onSubmit={handleVerifyOTP} className="space-y-6">
                 <div className="text-center lg:text-left mb-6">
-                  <h2 className="text-2xl font-bold text-primary mb-2">Verify Your Email</h2>
+                  <h2 className="text-2xl font-bold text-primary mb-2">
+                    Verify Your Email
+                  </h2>
                   <p className="text-primary/60">
-                    Enter the OTP sent to <span className="font-semibold text-primary">{form.email}</span>
+                    Enter the OTP sent to{" "}
+                    <span className="font-semibold text-primary">
+                      {form.email}
+                    </span>
                   </p>
                 </div>
 
                 {error && (
-                  <div className={`p-4 rounded-lg border ${
-                    error.type === "success" 
-                      ? "bg-green-50 border-green-200" 
-                      : "bg-red-50 border-red-200"
-                  }`}>
+                  <div
+                    className={`p-4 rounded-lg border ${
+                      error.type === "success"
+                        ? "bg-green-50 border-green-200"
+                        : "bg-red-50 border-red-200"
+                    }`}
+                  >
                     <div className="flex items-start gap-3">
                       <div className="flex-1">
-                        <div className={`font-semibold text-sm ${
-                          error.type === "success" ? "text-green-800" : "text-red-800"
-                        }`}>
+                        <div
+                          className={`font-semibold text-sm ${
+                            error.type === "success"
+                              ? "text-green-800"
+                              : "text-red-800"
+                          }`}
+                        >
                           {error.title}
                         </div>
-                        <div className={`text-sm ${
-                          error.type === "success" ? "text-green-700" : "text-red-700"
-                        }`}>
+                        <div
+                          className={`text-sm ${
+                            error.type === "success"
+                              ? "text-green-700"
+                              : "text-red-700"
+                          }`}
+                        >
                           {error.message}
                         </div>
                       </div>
-                      <button onClick={() => setError(null)} className={
-                        error.type === "success" ? "text-green-500 hover:text-green-700" : "text-red-500 hover:text-red-700"
-                      }>
+                      <button
+                        onClick={() => setError(null)}
+                        className={
+                          error.type === "success"
+                            ? "text-green-500 hover:text-green-700"
+                            : "text-red-500 hover:text-red-700"
+                        }
+                      >
                         ✕
                       </button>
                     </div>
@@ -543,7 +771,9 @@ export default function SignUp() {
                       disabled={resendLoading || cooldown > 0}
                       className="text-secondary hover:text-accent1 disabled:opacity-50 flex items-center gap-1 transition-colors"
                     >
-                      {resendLoading && <Loader2 className="w-3 h-3 animate-spin" />}
+                      {resendLoading && (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      )}
                       {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend OTP"}
                     </button>
 
@@ -586,17 +816,23 @@ export default function SignUp() {
                 </div>
 
                 <div className="space-y-4">
-                  <h2 className="text-2xl font-bold text-primary">Request Submitted!</h2>
-                  
+                  <h2 className="text-2xl font-bold text-primary">
+                    Request Submitted!
+                  </h2>
+
                   <div className="p-4 rounded-lg bg-blue-50 border border-blue-200 text-left">
                     <div className="text-sm text-blue-800">
-                      Your request <span className="font-semibold">has been submitted</span> and is now{" "}
-                      <span className="font-semibold">under review</span> by your branch admin.
+                      Your request{" "}
+                      <span className="font-semibold">has been submitted</span>{" "}
+                      and is now{" "}
+                      <span className="font-semibold">under review</span> by
+                      your branch admin.
                     </div>
                   </div>
 
                   <p className="text-primary/60 text-sm">
-                    Kindly contact your T&P coordinator to get your ID approved.                  </p>
+                    Kindly contact your T&P coordinator to get your ID approved.{" "}
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">
