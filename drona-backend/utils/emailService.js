@@ -6,7 +6,7 @@ const sendOTPEmail = async (email, otp, name) => {
     return false;
   }
 
-  const url = 'https://drona-client.vercel.app/api/email/send-otp';
+  const url = 'http://3.111.39.191:3000/api/email/send-otp';
   const payload = { email, otp, name };
 
   try {
