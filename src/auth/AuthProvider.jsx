@@ -1,24 +1,27 @@
+// src/auth/AuthProvider.jsx
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Loader from "../Component/Basic/Loader";
 import AuthContext from "./authContext";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
+const SUPER_ADMIN_EMAIL = import.meta.env.VITE_SUPER_ADMIN_EMAIL?.toLowerCase();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [role, setRole] = useState("normal"); // "normal" | "admin" | "super-admin"
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Guard to avoid concurrent verify calls if verify is triggered multiple times (optional)
   const verify = useCallback(async () => {
-    // defensive: if already loading and user is null, proceed (this prevents races)
     setLoading(true);
     const token = localStorage.getItem("token");
+
     if (!token) {
       setUser(null);
+      setRole("normal");
       setLoading(false);
-      return null;
+      return;
     }
 
     try {
@@ -26,43 +29,51 @@ const AuthProvider = ({ children }) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!res.ok) {
-        console.warn("Auth verify failed:", res.status, res.statusText);
         setUser(null);
+        setRole("normal");
         localStorage.removeItem("token");
         setLoading(false);
-        return null;
+        return;
       }
 
       const data = await res.json();
-      if (data && data.user) {
-        setUser(data.user);
-        setLoading(false);
-        console.log("Auth verified:", data.user);
-        return data.user;
-      } else {
+      if (!data?.user) {
         setUser(null);
-        localStorage.removeItem("token");
+        setRole("normal");
         setLoading(false);
-        return null;
+        return;
       }
+
+      const loggedUser = data.user;
+      setUser(loggedUser);
+
+      // Decide superadmin based on email
+      if (loggedUser.email?.toLowerCase() === SUPER_ADMIN_EMAIL) {
+        setRole("super-admin");
+      } else {
+        setRole("normal");
+      }
+
+      setLoading(false);
     } catch (err) {
-      console.error("Auth verify error:", err);
+      console.error("Verify Error:", err);
       setUser(null);
+      setRole("normal");
       localStorage.removeItem("token");
       setLoading(false);
-      return null;
     }
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     setUser(null);
-    navigate("/signup");
+    setRole("normal");
+    navigate("/");
   }, [navigate]);
 
   useEffect(() => {
@@ -72,7 +83,7 @@ const AuthProvider = ({ children }) => {
   if (loading) return <Loader />;
 
   return (
-    <AuthContext.Provider value={{ user, loading, verify, logout }}>
+    <AuthContext.Provider value={{ user, role, loading, verify, logout }}>
       {children}
     </AuthContext.Provider>
   );
