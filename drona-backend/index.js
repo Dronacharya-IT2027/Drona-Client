@@ -23,6 +23,7 @@ app.use('/api/admin', require('./routes/admin'));
 app.use('/api/defaulters', require('./routes/defaulter'));
 app.use('/api/super-admin', require('./routes/super-admin'));
 app.use('/api/Linkedin-jobs', require('./routes/jobs'));
+app.use('/api/admin-manag', require('./routes/admin-managment'));
 
 // Root route
 app.get('/', (req, res) => res.send('University Skill Backend is running'));

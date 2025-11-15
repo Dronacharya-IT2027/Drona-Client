@@ -31,7 +31,8 @@ const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   "";
 
-const LeftTest = ({ data }) => {
+const LeftTest = ({ activeTest, pastTest }) => {
+  console.log(activeTest, pastTest);
   const [scheduledTests, setScheduledTests] = useState([]);
   const [pastTests, setPastTests] = useState([]);
 
@@ -58,7 +59,6 @@ const LeftTest = ({ data }) => {
 
   // Add questions state: JSON textarea (string)
   const [questionsJson, setQuestionsJson] = useState("");
-  const [questionData, setQuestionData] = useState({}); // kept for backwards compat in modals
   const [copied, setCopied] = useState(false);
 
   // small local loading flags
@@ -212,63 +212,15 @@ const LeftTest = ({ data }) => {
 
   // --- IMPORTANT FIX: use startDateStr / endDateStr (returned by normalizeTest) ---
   useEffect(() => {
-    if (!Array.isArray(data)) {
+    if (!Array.isArray(activeTest) || !Array.isArray(pastTests)) {
       setScheduledTests([]);
       setPastTests([]);
       return;
     }
 
-    const now = new Date();
-    const sched = [];
-    const past = [];
-
-    for (const rawTest of data) {
-      const t = normalizeTest(rawTest);
-      const endDT = combineDateTime(
-      t.endDateStr || t.startDateStr,
-      t.endTime || t.startTime
-      );
-
-      const isPast = endDT ? endDT.getTime() <= now.getTime() : true; // treat missing date as past
-
-
-      const display = {
-        id:
-          t.id ||
-          (t.raw && t.raw._id) ||
-          Math.random().toString(36).slice(2, 9),
-        name: t.name,
-        title: t.title,
-        date: t.displayDate,
-        time: t.displayTime,
-        level: t.level || "",
-        qPerTime: t.qPerTime || "",
-        syllabus: t.syllabus || [],
-        qDivision: t.qDivision || [],
-        answerDriveLink: t.answerDriveLink || "",
-        raw: t.raw,
-        endDateTime: endDT,
-      };
-
-      if (isPast) past.push(display);
-      else sched.push(display);
-    }
-
-    sched.sort((a, b) => {
-      const aTime = a.endDateTime ? a.endDateTime.getTime() : 0;
-      const bTime = b.endDateTime ? b.endDateTime.getTime() : 0;
-      return aTime - bTime;
-    });
-
-    past.sort((a, b) => {
-      const aTime = a.endDateTime ? a.endDateTime.getTime() : 0;
-      const bTime = b.endDateTime ? b.endDateTime.getTime() : 0;
-      return bTime - aTime;
-    });
-
-    setScheduledTests(sched);
-    setPastTests(past);
-  }, [data]);
+    setScheduledTests(activeTest);
+    setPastTests(pastTest);
+  }, [activeTest, pastTest]);
 
   // Create test: call API
   const handleCreateTest = async () => {

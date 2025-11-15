@@ -93,7 +93,7 @@ export default function CertifiedTeachersBadge() {
           {/* Count Badge */}
           <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 rounded-full border-2 border-white bg-yellow-400 flex items-center justify-center shadow-sm">
             <span className="font-kodchasan text-[9px] sm:text-[10px] md:text-xs font-bold text-gray-800">
-              135+
+              {totalUsers}+
             </span>
           </div>
         </div>

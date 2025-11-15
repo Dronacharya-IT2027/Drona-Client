@@ -31,8 +31,27 @@ import Admin from "./Pages/Admin";
 
 import SuperAdminDashboard from "./Pages/SuperAdmin";
 import AdminSignupRequests from "./Pages/AdminRequest";
+import SuperAdminSignupRequests from "./Pages/SuperAdminReq";
 
 function App() {
+
+  const SUPER_ADMIN_EMAIL = import.meta.env.VITE_SUPER_ADMIN_EMAIL;
+
+  // Read the JSON string safely
+  const storedUserJson = localStorage.getItem('user');
+  let storedEmail = '';
+
+  if (storedUserJson) {
+    try {
+      const storedUser = JSON.parse(storedUserJson);  // <-- proper parsing
+      storedEmail = (storedUser.email || '').trim().toLowerCase();
+    } catch (e) {
+      console.error("Invalid user JSON:", e);
+    }
+  }
+
+  const isSuperAdminUser = storedEmail === SUPER_ADMIN_EMAIL.toLowerCase();
+
   return (
     <Router>
       <ErrorBoundary>
@@ -40,12 +59,12 @@ function App() {
           <Navbar />
           <Suspense fallback={<Loader />}>
             <main className="min-h-[80vh]">
+                {!isSuperAdminUser ? (
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/aptitude-test" element={<ProtectedRoute><Aptitest /></ProtectedRoute>} />
                 <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
-                <Route path="/review" element={<ProtectedRoute><AdminSignupRequests /></ProtectedRoute>} />
                 <Route path="/dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
                 <Route path= "/GD-and-Interview" element = {<GDandInterviewpage/>}/>
                 <Route path= "/test" element = {<ProtectedRoute><SecureTestApp/></ProtectedRoute>}/>
@@ -57,7 +76,6 @@ function App() {
                 {/* admin */}
 
                 <Route path= "/admin" element = {<ProtectedRoute><Admin/></ProtectedRoute>}/>
-                <Route path= "/admin-super" element = {<SuperAdminDashboard/>}/>
 
                 <Route
                   path="*"
@@ -69,6 +87,10 @@ function App() {
                   }
                 />
               </Routes>
+                ):(
+                  <SuperAdminDashboard />
+                )}
+              
             </main>
           </Suspense>
           <Footer />

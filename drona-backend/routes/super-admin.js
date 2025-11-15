@@ -7,6 +7,8 @@ const auth = require('../middlewares/auth'); // must attach req.user = { id, rol
 const User = require('../models/User');
 const Test = require('../models/Test');
 const Defaulter = require('../models/Defaulter');
+const SignupRequest  = require('../models/SignupRequest');
+const jwt = require('jsonwebtoken');
 
 /**
  * GET /api/users/admins
@@ -26,6 +28,7 @@ const Defaulter = require('../models/Defaulter');
  *   results: [{ _id, name, email, branch, role, enrollmentNumber, createdAt }, ...]
  * }
  */
+
 router.get('/admins', auth, async (req, res) => {
   try {
     const callerId = req.user && req.user.id;
@@ -553,5 +556,167 @@ router.get('/reports/branch-averages', auth, async (req, res) => {
     return res.status(500).json({ success: false, message: 'Server error', error: err.message });
   }
 });
+
+
+router.get('/admin/signup-requests', async (req, res) => {
+  try {
+    const authHeader = req.header('Authorization') || '';
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    if (!token) return res.status(401).json({ success: false, message: 'No token provided. Authorization denied.' });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ success: false, message: 'Invalid or expired token.' });
+    }
+
+    const admin = await User.findById(decoded.id).select('name email role branch');
+    if (!admin) return res.status(404).json({ success: false, message: 'Admin not found.' });
+    if (admin.role !== 'admin') return res.status(403).json({ success: false, message: 'Access denied. Admins only.' });
+
+    // NOTE: no branch filtering here — admin sees requests from all branches
+    const status = (req.query.status || 'under_review');
+    const requests = await SignupRequest.find({ status })
+      .sort({ createdAt: -1 })
+      .lean()
+      .exec();
+
+    return res.json({ success: true, admin: { id: admin._id, branch: admin.branch }, requests });
+  } catch (err) {
+    console.error('GET /admin/signup-requests error:', err);
+    return res.status(500).json({ success: false, message: 'Server error', error: err.message });
+  }
+});
+
+/**
+ * ADMIN — accept a request (any branch allowed)
+ * POST /api/admin/signup-requests/:id/accept
+ */
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your_fallback_secret_here';
+
+router.post('/admin/signup-requests/:id/accept', async (req, res) => {
+  try {
+    const authHeader = req.header('Authorization') || '';
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    if (!token) return res.status(401).json({ success: false, message: 'No token provided. Authorization denied.' });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ success: false, message: 'Invalid or expired token.' });
+    }
+
+    const admin = await User.findById(decoded.id).select('name email role branch');
+    if (!admin) return res.status(404).json({ success: false, message: 'Admin not found.' });
+    if (admin.role !== 'admin') return res.status(403).json({ success: false, message: 'Access denied. Admins only.' });
+
+    const reqId = req.params.id;
+    const request = await SignupRequest.findById(reqId);
+    if (!request) return res.status(404).json({ success: false, message: 'Request not found.' });
+    if (request.status !== 'under_review') {
+      return res.status(400).json({ success: false, message: `Request already ${request.status}.` });
+    }
+
+    // Final uniqueness check before creating User
+    const dupeEmail = await User.findOne({ email: request.email });
+    const dupeEnroll = await User.findOne({ enrollmentNumber: request.enrollmentNumber });
+    if (dupeEmail || dupeEnroll) {
+      // mark as rejected since a conflicting user already exists
+      request.status = 'rejected';
+      request.decidedAt = new Date();
+      request.decidedBy = admin._id;
+      await request.save();
+      return res.status(409).json({ success: false, message: 'User with same email/enrollment already exists. Request rejected.' });
+    }
+
+    // Create the actual user (preserve branch from request)
+    const user = await User.create({
+      name: request.name,
+      enrollmentNumber: request.enrollmentNumber,
+      email: request.email,
+      passwordHash: request.passwordHash,
+      branch: request.branch,
+      linkedin: request.linkedin,
+      leetcode: request.leetcode,
+      github: request.github,
+      role: 'student',
+      isVerified: true // or false if you want email verification later
+    });
+
+    // Update request status
+    request.status = 'accepted';
+    request.decidedAt = new Date();
+    request.decidedBy = admin._id;
+    request.createdUserId = user._id;
+    await request.save();
+
+    return res.json({
+      success: true,
+      message: 'Signup request accepted and user created.',
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        branch: user.branch,
+        enrollmentNumber: user.enrollmentNumber,
+        role: user.role
+      },
+      request: {
+        id: request._id,
+        status: request.status,
+        decidedAt: request.decidedAt,
+        decidedBy: request.decidedBy
+      }
+    });
+  } catch (err) {
+    console.error('POST /admin/signup-requests/:id/accept error:', err);
+    return res.status(500).json({ success: false, message: 'Server error', error: err.message });
+  }
+});
+
+/**
+ * ADMIN — reject a request (any branch allowed)
+ * POST /api/admin/signup-requests/:id/reject
+ */
+router.post('/admin/signup-requests/:id/reject', async (req, res) => {
+  try {
+    const authHeader = req.header('Authorization') || '';
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    if (!token) return res.status(401).json({ success: false, message: 'No token provided. Authorization denied.' });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ success: false, message: 'Invalid or expired token.' });
+    }
+
+    const admin = await User.findById(decoded.id).select('name email role branch');
+    if (!admin) return res.status(404).json({ success: false, message: 'Admin not found.' });
+    if (admin.role !== 'admin') return res.status(403).json({ success: false, message: 'Access denied. Admins only.' });
+
+    const reqId = req.params.id;
+    const request = await SignupRequest.findById(reqId);
+    if (!request) return res.status(404).json({ success: false, message: 'Request not found.' });
+    if (request.status !== 'under_review') {
+      return res.status(400).json({ success: false, message: `Request already ${request.status}.` });
+    }
+
+    // No branch check here — admin can reject any request
+    request.status = 'rejected';
+    request.decidedAt = new Date();
+    request.decidedBy = admin._id;
+    await request.save();
+
+    return res.json({ success: true, message: 'Signup request rejected.', requestId: request._id });
+  } catch (err) {
+    console.error('POST /admin/signup-requests/:id/reject error:', err);
+    return res.status(500).json({ success: false, message: 'Server error', error: err.message });
+  }
+});
+
 
 module.exports = router;

@@ -601,8 +601,7 @@ export default function SignUp() {
                   </div>
 
                   <p className="text-primary/60 text-sm">
-                    You'll receive an email once your request is accepted. After approval, you can log in using your email and password.
-                  </p>
+                    Kindly contact your T&P coordinator to get your ID approved.                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4">

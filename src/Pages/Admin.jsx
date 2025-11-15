@@ -20,6 +20,8 @@ const API_BASE =
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState('test');
+  const [activeTest, setActiveTest] = useState([]);
+  const [pastTests, setPastTests] = useState([]);
 
   // admin check state
   const [checking, setChecking] = useState(true);
@@ -52,6 +54,8 @@ export default function Admin() {
         if (res.data && res.data.success) {
           setIsAdmin(true);
           setTestsData(Array.isArray(res.data.tests) ? res.data.tests : []);
+          setActiveTest(Array.isArray(res.data.activeTests) ? res.data.activeTests : [])
+          setPastTests(Array.isArray(res.data.pastTests) ? res.data.pastTests : [])
         } else {
           setIsAdmin(false);
           setErrorMsg(res.data && res.data.message ? res.data.message : 'Access denied');
@@ -191,7 +195,7 @@ export default function Admin() {
                 >
                   <div className="min-h-[250px] sm:min-h-[300px] md:min-h-[400px]">
                     {/* pass tests data to LeftTest as 'data' prop */}
-                    <LeftTest data={testsData} />
+                    <LeftTest activeTest={activeTest} pastTest={pastTests}/>
                   </div>
                   <div className="min-h-[250px] sm:min-h-[300px] md:min-h-[400px] ">
                     <RightTest />

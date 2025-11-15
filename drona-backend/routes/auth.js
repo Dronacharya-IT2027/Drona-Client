@@ -530,6 +530,8 @@ router.post('/admin/signup-requests/:id/reject', async (req, res) => {
 /**
  * Existing admin tests route (unchanged)
  */
+// GET /api/admin/tests
+// GET /api/admin/tests  (normalized on server)
 router.get('/admin/tests', async (req, res) => {
   try {
     const authHeader = req.header('Authorization') || '';
@@ -546,22 +548,187 @@ router.get('/admin/tests', async (req, res) => {
       return res.status(401).json({ success: false, message: 'Invalid or expired token.' });
     }
 
-    const user = await User.findById(decoded.id).select('name email role');
+    // load requesting user (the admin)
+    const user = await User.findById(decoded.id).select('name email role branch').lean();
     if (!user) return res.status(404).json({ success: false, message: 'User not found.' });
     if (user.role !== 'admin') return res.status(403).json({ success: false, message: 'Access denied. Admins only.' });
 
-    const tests = await Test.find({ createdBy: user._id }).sort({ createdAt: -1 }).lean().exec();
+    // find all admins in the same branch
+    const adminsInBranch = await User.find({ role: 'admin', branch: user.branch }).select('_id').lean();
+    const adminIds = adminsInBranch.map(a => a._id).filter(Boolean);
+
+    // if none found, return empty lists
+    if (adminIds.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: 'No admin-created tests found for this branch.',
+        admin: { id: user._id, name: user.name, email: user.email, branch: user.branch },
+        activeTests: [],
+        pastTests: []
+      });
+    }
+
+    // fetch tests created by any admin in this branch (newest first) and include creator info
+    const tests = await Test.find({ createdBy: { $in: adminIds } })
+      .sort({ createdAt: -1 })
+      .populate('createdBy', 'name email branch')
+      .lean()
+      .exec();
+
+    // helper: robustly extract date string (handles Date objects, ISO strings, mongo extended JSON)
+    const extractDateString = (val) => {
+      if (!val && val !== 0) return '';
+      if (typeof val === 'string') return val;
+      if (val instanceof Date) return val.toISOString();
+      if (typeof val === 'number') {
+        const d = new Date(val);
+        return isNaN(d.getTime()) ? '' : d.toISOString();
+      }
+      if (typeof val === 'object' && val !== null) {
+        if ('$date' in val) {
+          const dval = val.$date;
+          if (typeof dval === 'string') return dval;
+          if (typeof dval === 'number') return new Date(dval).toISOString();
+          if (typeof dval === 'object' && '$numberLong' in dval) {
+            const num = Number(dval.$numberLong);
+            if (!Number.isNaN(num)) return new Date(num).toISOString();
+          }
+        }
+      }
+      return '';
+    };
+
+    // helper: compute end datetime (returns Date object or null)
+    const computeEndDateTime = (test) => {
+      try {
+        // pull normalized date/time values (raw doc may have string or Date)
+        const endDateRaw = test.endDate ?? test.end_date ?? test.end;
+        const endTimeRaw = test.endTime ?? test.end_time ?? test.endAt ?? test.end_time;
+
+        const endDateStr = extractDateString(endDateRaw);
+        // if no endDate at all — consider it past by returning epoch
+        if (!endDateStr) return new Date(0);
+
+        // If endDateStr already contains a time (ISO) we can parse it; else combine with endTime
+        let datePart = endDateStr;
+        // If endDateStr contains "T", it's an ISO with possible time
+        if (datePart.includes('T')) {
+          const dt = new Date(datePart);
+          // If endTimeRaw exists, override time portion
+          if (!isNaN(dt.getTime()) && endTimeRaw && typeof endTimeRaw === 'string') {
+            // parse HH:mm
+            const parts = endTimeRaw.split(':').map(p => parseInt(p, 10));
+            const hours = parts.length >= 1 && !Number.isNaN(parts[0]) ? Math.min(Math.max(parts[0], 0), 23) : dt.getHours();
+            const minutes = parts.length >= 2 && !Number.isNaN(parts[1]) ? Math.min(Math.max(parts[1], 0), 59) : dt.getMinutes();
+            dt.setHours(hours, minutes, 59, 999);
+            return dt;
+          }
+          if (!isNaN(dt.getTime())) {
+            dt.setHours(dt.getHours(), dt.getMinutes(), 59, 999);
+            return dt;
+          }
+        }
+
+        // parse endTime (HH:mm) default to 23:59 if missing or invalid
+        let hours = 23;
+        let minutes = 59;
+        if (endTimeRaw && typeof endTimeRaw === 'string') {
+          const parts = endTimeRaw.split(':').map(p => parseInt(p, 10));
+          if (parts.length >= 1 && !Number.isNaN(parts[0])) hours = Math.min(Math.max(parts[0], 0), 23);
+          if (parts.length >= 2 && !Number.isNaN(parts[1])) minutes = Math.min(Math.max(parts[1], 0), 59);
+        }
+
+        // create Date from date part (datePart may be "YYYY-MM-DD" or other ISO)
+        // ensure we build an ISO string acceptable by Date
+        let isoDate;
+        if (datePart.includes('-')) {
+          // if it's full ISO, keep date portion
+          isoDate = datePart.split('T')[0];
+        } else {
+          isoDate = datePart;
+        }
+
+        // final ISO-like string
+        const iso = `${isoDate}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:59.999Z`;
+        const final = new Date(iso);
+        // If parsed invalid (timezone issues), fallback to local construct
+        if (isNaN(final.getTime())) {
+          const local = new Date(isoDate);
+          local.setHours(hours, minutes, 59, 999);
+          return local;
+        }
+        return final;
+      } catch (e) {
+        return new Date(0);
+      }
+    };
+
+    const now = new Date();
+    const activeTests = [];
+    const pastTests = [];
+
+    // helper: normalize a test doc into UI-friendly shape
+    const normalizeForUI = (t) => {
+      const startDateStr = extractDateString(t.startDate ?? t.start_date ?? t.start ?? '');
+      const endDateStr = extractDateString(t.endDate ?? t.end_date ?? t.end ?? '');
+      const startTime = t.startTime ?? t.start_time ?? t.startAt ?? '';
+      const endTime = t.endTime ?? t.end_time ?? t.endAt ?? t.endTime ?? '';
+      const qPerTime = (t.qPerTime !== undefined && t.qPerTime !== null) ? t.qPerTime : (t.q_per_time ?? '');
+      const syllabus = Array.isArray(t.syllabusTags) ? t.syllabusTags : Array.isArray(t.syllabus) ? t.syllabus : (typeof t.syllabusTags === 'string' ? t.syllabusTags.split(',').map(s => s.trim()).filter(Boolean) : []);
+      const answerDriveLink = t.answerDriveLink || t.answer_drive_link || t.answerLink || t.answer_link || '';
+
+      const displayDate = startDateStr ? startDateStr.slice(0, 10) : endDateStr ? endDateStr.slice(0, 10) : '';
+      const displayTime = startTime || endTime || '';
+
+      const endDT = computeEndDateTime(t);
+      // ensure creator info is present
+      const createdBy = (t.createdBy && typeof t.createdBy === 'object') ? {
+        _id: t.createdBy._id || t.createdBy.id || null,
+        name: t.createdBy.name || '',
+        email: t.createdBy.email || '',
+        branch: t.createdBy.branch || ''
+      } : { _id: t.createdBy || null };
+
+      return {
+        id: t._id || t.id || '',
+        title: t.title || t.name || '',
+        name: t.title || t.name || '',
+        startDateStr,
+        startTime,
+        endDateStr,
+        endTime,
+        date: displayDate,
+        time: displayTime,
+        qPerTime,
+        syllabus,
+        answerDriveLink,
+        createdBy,
+        endDateTime: endDT ? (endDT instanceof Date ? endDT.toISOString() : new Date(endDT).toISOString()) : null,
+        raw: t
+      };
+    };
+
+    for (const t of tests) {
+      const normalized = normalizeForUI(t);
+      // parse endDateTime as Date for comparison
+      const endDT = normalized.endDateTime ? new Date(normalized.endDateTime) : new Date(0);
+      if (endDT.getTime() > now.getTime()) activeTests.push(normalized);
+      else pastTests.push(normalized);
+    }
 
     return res.status(200).json({
       success: true,
-      message: 'Tests fetched for admin.',
-      admin: { id: user._id, name: user.name, email: user.email },
-      tests
+      message: 'Tests fetched and grouped by active / past for admins in your branch.',
+      admin: { id: user._id, name: user.name, email: user.email, branch: user.branch },
+      activeTests,
+      pastTests
     });
   } catch (err) {
-    console.error('GET /api/users/admin/tests error:', err);
+    console.error('GET /api/admin/tests error:', err);
     return res.status(500).json({ success: false, message: 'Server error', error: err.message });
   }
 });
+
+
 
 module.exports = router;

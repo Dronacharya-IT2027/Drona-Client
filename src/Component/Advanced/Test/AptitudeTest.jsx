@@ -108,23 +108,6 @@ const AptitudeTestPage = () => {
   const [userTests, setUserTests] = useState([]);
   const [loadingUserTests, setLoadingUserTests] = useState(true);
 
-  const pastTests = [
-    {
-      id: 4,
-      title: "Previous Assessment",
-      aptitudeQ: 30,
-      daaQ: 20,
-      date: "5th Oct 2025",
-      startTime: "10:00 AM",
-      endTime: "12:00 PM",
-      duration: "2 hours",
-      totalMarks: 100,
-      syllabus: [
-        { topic: "Basic Aptitude", description: "Quantitative aptitude basics" }
-      ]
-    }
-  ];
-
   const weakTopics = [
     "Dynamic Programming",
     "Graph Theory",
