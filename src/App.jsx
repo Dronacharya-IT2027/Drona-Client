@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // auth
 import AuthProvider  from "./auth/AuthProvider";
 import ProtectedRoute from "./auth/ProtectedRoute";
-
+import DisableInspect from "../src/API/Security/DisableInspect";
 //componnets
 import Navbar from "./Component/Basic/Navbar";
 import Footer from "./Component/Basic/Footer";
@@ -52,13 +52,25 @@ function App() {
   }
 
   const isSuperAdminUser = storedEmail === SUPER_ADMIN_EMAIL.toLowerCase();
+  const FakeDelay = ({ children }) => {
+  const [ready, setReady] = React.useState(false);
+
+  React.useEffect(() => {
+    setTimeout(() => setReady(true), 1000); // 3 sec delay
+  }, []);
+
+  return ready ? children : <Loader />;
+};
+
 
   return (
+      <DisableInspect> 
     <Router>
       <ErrorBoundary>
         <AuthProvider>
           <Navbar />
           <Suspense fallback={<Loader />}>
+            
             <main className="min-h-[80vh]">
               <Routes>
                 {!isSuperAdminUser ? (
@@ -96,11 +108,13 @@ function App() {
                 )}
               </Routes>
             </main>
+        
           </Suspense>
           <Footer />
         </AuthProvider>
       </ErrorBoundary>
     </Router>
+    </DisableInspect>
   );
 }
 
