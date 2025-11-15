@@ -23,10 +23,10 @@ const About = () => {
     {
       id: 1,
       name: "Adarsh Kumar",
-      role: "Full Stack Developer",
+      role: "Full Stack and AI/ML Developer",
       image: "/about/Adarsh-jha.jpg",
-      linkedin: "https://linkedin.com/in/adarsh-kumar",
-      email: "adarsh@dronacharya.com",
+      linkedin: "https://www.linkedin.com/in/adarsh-kumar-13a17b2a7/",
+      email: "adarsh25nov@gmail.com",
       contributions: [
         "Backend Architecture",
         "User Interface Design",
@@ -39,8 +39,8 @@ const About = () => {
       name: "Kishan Kumar",
       role: "Full Stack Developer",
       image: "/about/kishan-kumar.jpg",
-      linkedin: "https://linkedin.com/in/kishan-kumar",
-      email: "kishan@dronacharya.com",
+      linkedin: "https://www.linkedin.com/in/kishan-kumar-00822428b/",
+      email: "dronacharya.it2027@gmail.com",
       contributions: [
         "Project Management",
         "React Development",
@@ -53,8 +53,8 @@ const About = () => {
       name: "Manas Singh",
       role: "Full Stack Developer",
       image: "/about/Manas-Singh.png",
-      linkedin: "https://linkedin.com/in/manas-singh",
-      email: "manas@dronacharya.com",
+      linkedin: "https://www.linkedin.com/in/manas-singh-1b7a23289/",
+      email: "dronacharya.it2027@gmail.com",
       contributions: [
         "Project Management",
         "Full Stack Development",
