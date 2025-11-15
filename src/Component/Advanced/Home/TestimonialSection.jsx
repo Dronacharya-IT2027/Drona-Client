@@ -6,7 +6,7 @@ const TestimonialSection = () => {
   const testimonials = [
   {
     id: 1,
-    name: "Sarah Johnson",
+    name: "Adarsh Jha",
     role: "Placed at Google",
     company: "Software Engineer",
     image: "/path-to-testimonial-photo-1.jpg",
@@ -17,7 +17,7 @@ const TestimonialSection = () => {
   },
   {
     id: 2,
-    name: "Michael Chen",
+    name: "Sagar Kumar Jha",
     role: "Placed at Microsoft",
     company: "Frontend Developer",
     image: "/path-to-testimonial-photo-2.jpg",
@@ -28,7 +28,7 @@ const TestimonialSection = () => {
   },
   {
     id: 3,
-    name: "Emily Rodriguez",
+    name: "Siddhart",
     role: "Placed at Amazon",
     company: "SDE 1",
     image: "/path-to-testimonial-photo-3.jpg",
@@ -39,7 +39,7 @@ const TestimonialSection = () => {
   },
   {
     id: 4,
-    name: "David Kim",
+    name: "Zishan Ansari",
     role: "Placed at Goldman Sachs",
     company: "Quantitative Analyst",
     image: "/path-to-testimonial-photo-4.jpg",
@@ -50,7 +50,7 @@ const TestimonialSection = () => {
   },
   {
     id: 5,
-    name: "Jessica Brown",
+    name: "Aditya",
     role: "Placed at Adobe",
     company: "Product Manager",
     image: "/path-to-testimonial-photo-5.jpg",
@@ -61,7 +61,7 @@ const TestimonialSection = () => {
   },
   {
     id: 6,
-    name: "Alex Turner",
+    name: "Rohit Chaudhary",
     role: "Placed at Meta",
     company: "Data Scientist",
     image: "/path-to-testimonial-photo-6.jpg",
@@ -72,7 +72,7 @@ const TestimonialSection = () => {
   },
   {
     id: 7,
-    name: "Priya Sharma",
+    name: "Riddhi Bansal",
     role: "Placed at Flipkart",
     company: "Backend Engineer",
     image: "/path-to-testimonial-photo-7.jpg",
@@ -83,7 +83,7 @@ const TestimonialSection = () => {
   },
   {
     id: 8,
-    name: "Rahul Verma",
+    name: "Vanshav",
     role: "Placed at Uber",
     company: "Mobile Developer",
     image: "/path-to-testimonial-photo-8.jpg",
@@ -221,9 +221,9 @@ const TestimonialSection = () => {
                               <h4 className="font-kodchasan font-bold text-primary text-base lg:text-lg">
                                 {testimonial.name}
                               </h4>
-                              <p className="font-kodchasan text-secondary text-xs lg:text-sm">
+                              {/* <p className="font-kodchasan text-secondary text-xs lg:text-sm">
                                 {testimonial.role}
-                              </p>
+                              </p> */}
                             </div>
                           </div>
                         </div>

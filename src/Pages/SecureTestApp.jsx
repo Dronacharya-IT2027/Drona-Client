@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Clock, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
+import { Clock, AlertTriangle, CheckCircle, XCircle,Award } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -24,22 +24,36 @@ const shuffleArray = (array) => {
   return newArray;
 };
 
-// update TestStartScreen signature and internals:
+
 const TestStartScreen = ({ test, loading, error, onStart }) => {
+
+  
   if (loading) {
     return (
-      <div className="min-h-screen pt-16 bg-background flex items-center justify-center p-4 font-kodchasan">
-        <div className="text-center">Loading test…</div>
+      <div className="min-h-screen w-full bg-background flex items-center justify-center p-4 font-kodchasan">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secondary mx-auto mb-4"></div>
+          <p className="text-primary text-lg">Loading Test...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen pt-16 bg-background flex items-center justify-center p-4 font-kodchasan">
-        <div className="bg-white rounded-lg p-6">
-          <h3 className="text-lg font-bold mb-2">Cannot load test</h3>
-          <p className="text-sm text-secondary mb-4">{error}</p>
+      <div className="min-h-screen w-full bg-background flex items-center justify-center p-4 font-kodchasan">
+        <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle className="w-8 h-8 text-red-500" />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Test Unavailable</h3>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.history.back()}
+            className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 rounded-lg transition-all"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );
@@ -50,48 +64,142 @@ const TestStartScreen = ({ test, loading, error, onStart }) => {
   }
 
   return (
-    <div className="min-h-screen pt-16 bg-background flex items-center justify-center p-4 font-kodchasan">
-      <div className="bg-white rounded-lg shadow-xl p-6 md:p-8 max-w-md w-full">
-        <h1 className="text-2xl md:text-3xl font-bold text-primary mb-4">
-          {test.title}
-        </h1>
-        <div className="space-y-3 mb-6 text-sm md:text-base">
-          <p className="text-primary">
-            <span className="font-semibold">Total Questions:</span>{" "}
-            {test.questions.length}
-          </p>
-          <p className="text-primary">
-            <span className="font-semibold">Total Duration:</span>{" "}
-            {Math.floor(test.totalDuration / 60)} minutes
-          </p>
-          <p className="text-primary">
-            <span className="font-semibold">Per Question:</span>{" "}
-            {Math.floor(test.questionTime)} seconds
+    <div 
+      className="min-h-screen w-full bg-background font-kodchasan flex flex-col"
+    >
+  
+      {/* Main Content - Centered */}
+      <div className="flex-1 mt-16 flex items-center justify-center p-6">
+        <div className="max-w-6xl w-full grid lg:grid-cols-3 gap-8">
+          {/* Left Column - Test Details */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl shadow-2xl p-8">
+              {/* Test Header */}
+              <div className="flex items-start justify-between mb-8">
+                <div>
+                  <h1 className="text-4xl font-bold text-gray-900 mb-3">
+                    {test.title}
+                  </h1>
+                  <p className="text-gray-600 text-lg">
+                    Read all instructions carefully before starting the test
+                  </p>
+                </div>
+                <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-semibold flex items-center">
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Ready to Start
+                </div>
+              </div>
+
+              {/* Test Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl p-6 text-center">
+                  <Clock className="w-8 h-8 mx-auto mb-3" />
+                  <p className="text-sm opacity-90">Total Duration</p>
+                  <p className="text-2xl font-bold">
+                    {Math.floor(test.totalDuration / 60)} minutes
+                  </p>
+                </div>
+                <div className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl p-6 text-center">
+                  <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="font-bold">?</span>
+                  </div>
+                  <p className="text-sm opacity-90">Total Questions</p>
+                  <p className="text-2xl font-bold">{test.questions.length}</p>
+                </div>
+                <div className="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl p-6 text-center">
+                  <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <span className="font-bold">⏱️</span>
+                  </div>
+                  <p className="text-sm opacity-90">Per Question</p>
+                  <p className="text-2xl font-bold">
+                    {Math.floor(test.questionTime)}s
+                  </p>
+                </div>
+              </div>
+
+              {/* Important Instructions */}
+              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                <h3 className="font-bold text-yellow-800 mb-4 flex items-center text-lg">
+                  <AlertTriangle className="w-6 h-6 mr-2" />
+                  Important Instructions
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4 text-yellow-700">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                    <p>Ensure stable internet connection throughout</p>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                    <p>Do not refresh or navigate away</p>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                    <p>All questions are mandatory and timed</p>
+                  </div>
+                  <div className="flex items-start space-x-3">
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
+                    <p>Test cannot be paused once started</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Start Button */}
+          <div className="space-y-6">
+            {/* Start Test Card */}
+            <div className="bg-gradient-to-br from-secondary to-accent2 rounded-2xl shadow-2xl p-6 text-white">
+              <h3 className="font-bold text-2xl mb-4">Ready to Begin?</h3>
+              <p className="text-white text-opacity-90 mb-6">
+                Once started, the timer will begin and cannot be paused. Ensure you're in a quiet environment.
+              </p>
+              
+              {/* Quick Stats */}
+              <div className="bg-white bg-opacity-20 rounded-lg p-4 mb-6">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span>Estimated Time</span>
+                    <span className="font-bold">{Math.floor(test.totalDuration / 60)} min</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Total Questions</span>
+                    <span className="font-bold">{test.questions.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Time Per Question</span>
+                    <span className="font-bold">{Math.floor(test.questionTime)}s</span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={onStart}
+                className="w-full bg-white text-secondary font-bold py-4 rounded-lg transition-all text-lg shadow-lg transform hover:scale-105 hover:shadow-xl"
+              >
+                Start Test Now
+              </button>
+
+              <p className="text-xs text-white text-opacity-80 text-center mt-4">
+                By starting, you agree to our proctoring policies
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="bg-white border-t py-4">
+        <div className="w-full text-center">
+          <p className="text-gray-500 text-sm">
+            Need technical assistance? Contact support at dronacharya.it2027@gmail.com
           </p>
         </div>
-        {/* anti-cheat block unchanged */}
-        <div className="bg-accent2 bg-opacity-20 p-4 rounded-lg mb-6">
-          <h3 className="font-semibold text-primary mb-2 text-sm md:text-base">
-            ⚠️ Anti-Cheat Measures Active:
-          </h3>
-          <ul className="text-xs md:text-sm text-primary space-y-1">
-            <li>• Fullscreen mode required</li>
-            <li>• Tab switching monitored</li>
-            <li>• Copy/paste disabled</li>
-            <li>• Screenshot detection active</li>
-            <li>• Timed questions</li>
-          </ul>
-        </div>
-        <button
-          onClick={onStart}
-          className="w-full bg-secondary hover:bg-opacity-90 text-white font-semibold py-3 rounded-lg transition-all text-sm md:text-base"
-        >
-          Start Test
-        </button>
       </div>
     </div>
   );
 };
+
+
 
 const QuestionBlock = ({ qNum, status, onClick, isActive }) => {
   const bgColor =
