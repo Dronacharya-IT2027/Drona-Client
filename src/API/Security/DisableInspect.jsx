@@ -22,14 +22,13 @@ export default function DisableInspect({ children }) {
       }
     };
 
-    // Disable copy/paste/cut
-    const handleCopyPaste = (e) => e.preventDefault();
+  
 
     // Disable text selection
     const disableSelection = () => false;
 
     // Disable drag
-    const disableDrag = (e) => e.preventDefault();
+    
 
     // Detect DevTools (smart technique)
     const devToolsDetector = setInterval(() => {
@@ -46,20 +45,12 @@ export default function DisableInspect({ children }) {
     // Add listeners
     document.addEventListener("contextmenu", handleContextMenu);
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("copy", handleCopyPaste);
-    document.addEventListener("paste", handleCopyPaste);
-    document.addEventListener("cut", handleCopyPaste);
-    document.addEventListener("dragstart", disableDrag);
     document.onselectstart = disableSelection;
 
     // Cleanup
     return () => {
       document.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("copy", handleCopyPaste);
-      document.removeEventListener("paste", handleCopyPaste);
-      document.removeEventListener("cut", handleCopyPaste);
-      document.removeEventListener("dragstart", disableDrag);
       document.onselectstart = null;
       clearInterval(devToolsDetector);
     };

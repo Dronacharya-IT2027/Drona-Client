@@ -64,7 +64,7 @@ function App() {
 
 
   return (
-      <DisableInspect> 
+    <DisableInspect> 
     <Router>
       <ErrorBoundary>
         <AuthProvider>
