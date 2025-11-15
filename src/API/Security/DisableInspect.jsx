@@ -24,8 +24,7 @@ export default function DisableInspect({ children }) {
 
   
 
-    // Disable text selection
-    const disableSelection = () => false;
+    
 
     // Disable drag
     
@@ -45,13 +44,13 @@ export default function DisableInspect({ children }) {
     // Add listeners
     document.addEventListener("contextmenu", handleContextMenu);
     document.addEventListener("keydown", handleKeyDown);
-    document.onselectstart = disableSelection;
+ 
 
     // Cleanup
     return () => {
       document.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("keydown", handleKeyDown);
-      document.onselectstart = null;
+    
       clearInterval(devToolsDetector);
     };
   }, [isProduction]);
