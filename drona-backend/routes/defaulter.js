@@ -71,23 +71,23 @@ router.post('/mark', auth, async (req, res) => {
       .populate('defaulters', 'name email enrollmentNumber')
       .lean();
 
-    try {
-      const caller = await User.findById(callerId).select('email name').lean();
-      if (caller && caller.email) {
-        // call the report function; if it fails we log but still return success to frontend
-        const reported = await reportCheatingEmail(caller.email);
-        if (reported) {
-          console.log(`reportCheatingEmail: report sent for ${caller.email}`);
-        } else {
-          console.warn(`reportCheatingEmail: reporting returned false for ${caller.email}`);
-        }
-      } else {
-        console.warn(`reportCheatingEmail: could not find email for user ${callerId}`);
-      }
-    } catch (reportErr) {
-      // protect the main flow from reporting failures
-      console.error('Error while calling reportCheatingEmail:', reportErr);
-    }
+    // try {
+    //   const caller = await User.findById(callerId).select('email name').lean();
+    //   if (caller && caller.email) {
+    //     // call the report function; if it fails we log but still return success to frontend
+    //     const reported = await reportCheatingEmail(caller.email);
+    //     if (reported) {
+    //       console.log(`reportCheatingEmail: report sent for ${caller.email}`);
+    //     } else {
+    //       console.warn(`reportCheatingEmail: reporting returned false for ${caller.email}`);
+    //     }
+    //   } else {
+    //     console.warn(`reportCheatingEmail: could not find email for user ${callerId}`);
+    //   }
+    // } catch (reportErr) {
+    //   // protect the main flow from reporting failures
+    //   console.error('Error while calling reportCheatingEmail:', reportErr);
+    // }
 
     return res.json({ success: true, message: 'Defaulter recorded', defaulter: doc });
   } catch (err) {

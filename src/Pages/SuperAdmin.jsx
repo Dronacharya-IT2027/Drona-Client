@@ -337,7 +337,7 @@ export default function SuperAdminDashboard() {
 
               {/* The actual SuperAdminReq component (unchanged) */}
               <div>
-                <SuperAdminReq />
+                <SuperAdminReq   />
               </div>
             </div>
           </div>
