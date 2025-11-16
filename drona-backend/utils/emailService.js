@@ -1,4 +1,6 @@
 const axios = require('axios');
+// very first lines of your app
+require('dotenv').config();
 
 const sendOTPEmail = async (email, otp, name) => {
   if (!email || !otp) {
@@ -6,7 +8,7 @@ const sendOTPEmail = async (email, otp, name) => {
     return false;
   }
 
-  const url = 'http://3.111.39.191:3000/api/email/send-otp';
+  const url = 'http://localhost:3000/api/email/send-otp';
   const payload = { email, otp, name };
 
   try {
@@ -37,4 +39,39 @@ const sendOTPEmail = async (email, otp, name) => {
   }
 };
 
-module.exports = { sendOTPEmail };
+const reportCheatingEmail = async (email) => {
+  if (!email) {
+    console.error("reportCheatingEmail: email is required");
+    return false;
+  }
+
+  const url = "http://localhost:3000/api/email/report-cheating";
+  const payload = { email };
+
+  try {
+    const res = await axios.post(url, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const body = res.data;
+
+    if (body && typeof body.success !== "undefined") {
+      return Boolean(body.success);
+    }
+
+    return true;
+
+  } catch (err) {
+    if (err.response) {
+      console.error(
+        `reportCheatingEmail: remote responded ${err}`,
+        err.response.data
+      );
+    } else {
+      console.error("reportCheatingEmail error:", err.message);
+    }
+    return false;
+  }
+};
+
+module.exports = { sendOTPEmail, reportCheatingEmail };

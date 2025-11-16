@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Users, Plus, Eye, BarChart3, PieChart, X, Trash2 } from 'lucide-react';
-import AdminSignupRequests from './AdminRequest'; // same import pattern as Admin.jsx
+import SuperAdminReq from './SuperAdminReq'; // same import pattern as Admin.jsx
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 const token = localStorage.getItem('token') || '';
@@ -335,9 +335,9 @@ export default function SuperAdminDashboard() {
                 </button>
               </div>
 
-              {/* The actual AdminSignupRequests component (unchanged) */}
+              {/* The actual SuperAdminReq component (unchanged) */}
               <div>
-                <AdminSignupRequests />
+                <SuperAdminReq />
               </div>
             </div>
           </div>

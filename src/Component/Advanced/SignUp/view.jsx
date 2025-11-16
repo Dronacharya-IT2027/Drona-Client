@@ -295,11 +295,11 @@ export default function SignUp() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent2/10 to-accent1/10 p-4 font-kodchasan">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent2/10 to-accent1/10 p-4 font-kodchasan mb-36">
       <div className="w-full max-w-4xl mt-20 bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl border border-primary/10 overflow-hidden">
         <div className="flex flex-col lg:flex-row min-h-[600px]">
           {/* Left - Brand Section (Matches Hero) */}
-          <div className="w-full lg:w-2/5 p-8 bg-gradient-to-br from-secondary/20 to-accent1/20 flex flex-col justify-between relative overflow-hidden">
+<div className="hidden lg:flex w-full lg:w-2/5 p-8 bg-gradient-to-br from-secondary/20 to-accent1/20 flex-col justify-between relative overflow-hidden">
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-10 h-10 rounded-lg bg-gradient-to-tr from-secondary to-accent1 flex items-center justify-center shadow-lg">

@@ -8,7 +8,7 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER,
+    user: process.env.EMAIL_USER, 
     pass: process.env.EMAIL_PASS,
   },
   // sensible timeouts
@@ -143,7 +143,7 @@ router.post('/report-cheating', async (req, res) => {
       message: 'Cheating report email sent.',
     });
   } catch (err) {
-    console.error('✗ Failed to send cheating report email:', err);
+    console.log('✗ Failed to send cheating report email:', err);
     return res.status(500).json({
       success: false,
       message: 'Failed to send cheating report email',
